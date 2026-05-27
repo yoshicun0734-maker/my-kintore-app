@@ -60,7 +60,6 @@
         </section>
 
         <div id="content-dash" class="space-y-6">
-            
             <div class="space-y-3 bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900">
                 <div class="flex flex-col space-y-2">
                     <span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">部位フィルター:</span>
@@ -105,6 +104,11 @@
         <div id="content-log" class="hidden space-y-6">
             <div class="card-dark p-5 rounded-2xl space-y-5">
                 
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📅 トレーニング実施日</label>
+                    <input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#0aadc7] font-mono font-bold">
+                </div>
+
                 <div>
                     <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. 対象部位</label>
                     <div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div>
@@ -154,7 +158,7 @@
             <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2">
                 <div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl max-w-[88%]">
                     <span class="font-black text-[#0aadc7] block mb-1">AI Coach Agent</span>
-                    こんにちは！141個のフルメニューに対応完了しました。データを元にいつでもリアルタイムに分析・アドバイスします！
+                    こんにちは！データを元にいつでもリアルタイムに分析・アドバイスしますよ！
                 </div>
             </div>
             <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900">
@@ -177,7 +181,6 @@
     </nav>
 
     <script>
-        // 🔥 ご提示いただいた141種目を一文字の妥協もなく完全に網羅して格納しました！
         const exerciseMaster = {
             '背中': [
                 'チンニング（順手・ワイドグリップ）', 'チンニング（順手・ナローグリップ）', 'チンニング（逆手・ワイドグリップ）', 
@@ -270,11 +273,17 @@
         let currentFilterPeriod = 'ALL';
         let activeEditId = null;
         let calendarYear = 2026;
-        let calendarMonth = 4; // 2026年5月を初期表示
+        let calendarMonth = 4; // 5月
         let currentSetCount = 5;
 
-        // 共通ストレージキー
-        let appData = JSON.parse(localStorage.getItem('trainwise_v10_ultimate_full')) || { logs: [], personalBests: {} };
+        // 🔒 データ永久保持用の同一のストレージキー
+        let appData = JSON.parse(localStorage.getItem('trainwise_core_database')) || { logs: [], personalBests: {} };
+
+        // デフォルト日付を「今日」に設定する関数
+        function setDefaultLogDate() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            document.getElementById('log-date-picker').value = todayStr;
+        }
 
         function switchTab(tab) {
             ['dash', 'log', 'chat'].forEach(t => {
@@ -284,20 +293,17 @@
             document.getElementById(`content-${tab}`).classList.remove('hidden');
             document.getElementById(`nav-${tab}`).className = "flex-1 h-full flex flex-col justify-center items-center text-xs font-bold active-tab";
             if(tab === 'dash') { renderLogList(); updateCharts(currentFilterPart); }
+            if(tab === 'log' && activeEditId === null) { setDefaultLogDate(); } // 新規入力時は日付を今日にリセット
         }
 
-        // 🗓️ 1ヶ月表示カレンダーの生成ロジック
         function renderCalendar() {
-            const grid = document.getElementById('calendar-days-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('calendar-days-grid'); grid.innerHTML = '';
             document.getElementById('calendar-month-title').innerText = `${calendarYear}年 ${calendarMonth + 1}月`;
-
             const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
             const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 
             for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
-
-            let uniqueWorkoutDaysInMonth = new Set();
+            let uniqueDays = new Set();
 
             for (let day = 1; day <= totalDays; day++) {
                 const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -305,40 +311,31 @@
                 const hasWorkout = daysLogs.length > 0;
                 const hasPrUpdate = daysLogs.some(l => l.isPRUpdate);
 
-                if(hasWorkout) uniqueWorkoutDaysInMonth.add(day);
+                if(hasWorkout) uniqueDays.add(day);
 
                 let cellClass = "p-2 rounded-xl flex flex-col items-center justify-center text-gray-600 font-mono text-[11px] cursor-pointer active:scale-90 transition-all";
-                if (hasWorkout) {
-                    cellClass = "p-2 rounded-xl text-white font-black bg-gradient-to-b from-gray-900 via-gray-950 to-black border border-gray-800 cursor-pointer active:scale-90 transition-all";
-                }
+                if (hasWorkout) cellClass = "p-2 rounded-xl text-white font-black bg-gradient-to-b from-gray-900 via-gray-950 to-black border border-gray-800 cursor-pointer active:scale-90 transition-all";
 
                 let dotColor = 'text-transparent';
                 if (hasPrUpdate) dotColor = 'text-[#ff007f] text-[9px] font-black';
                 else if (hasWorkout) dotColor = 'text-[#0aadc7]';
 
-                grid.innerHTML += `
-                    <div class="${cellClass}" onclick="showDayLog('${dateStr}')">
-                        <span>${day}</span>
-                        <span class="text-[7px] leading-none mt-0.5 ${dotColor}">${hasPrUpdate ? '★' : '●'}</span>
-                    </div>`;
+                grid.innerHTML += `<div class="${cellClass}" onclick="showDayLog('${dateStr}')"><span>${day}</span><span class="text-[7px] leading-none mt-0.5 ${dotColor}">${hasPrUpdate ? '★' : '●'}</span></div>`;
             }
-            document.getElementById('monthly-count-badge').innerText = `${uniqueWorkoutDaysInMonth.size} 日`;
+            document.getElementById('monthly-count-badge').innerText = `${uniqueDays.size} 日`;
         }
 
-        // 🔍 カレンダーの日付タップで、その日のメニュー一覧をすぐ下に浮き出させる機能
         function showDayLog(dateStr) {
             const box = document.getElementById('selected-day-log-box');
             const title = document.getElementById('selected-date-title');
             const recordsContainer = document.getElementById('selected-day-records');
-
             const daysLogs = appData.logs.filter(l => l.date === dateStr);
             
             title.innerText = `🔍 ${dateStr.replace(/-/g, '/')} のトレーニング実績`;
-            recordsContainer.innerHTML = '';
-            box.classList.remove('hidden');
+            recordsContainer.innerHTML = ''; box.classList.remove('hidden');
 
             if(daysLogs.length === 0) {
-                recordsContainer.innerHTML = `<p class="text-[10px] text-gray-500 italic py-2 text-center">この日のトレーニング記録はありません。</p>`;
+                recordsContainer.innerHTML = `<p class="text-[10px] text-gray-500 italic py-2 text-center">この日の記録はありません。</p>`;
                 return;
             }
 
@@ -351,9 +348,7 @@
                             <span class="font-bold text-white">${log.exercise}</span>
                             ${log.isPRUpdate ? '<span class="text-[#ff007f] text-[9px] font-black animate-pulse">★PR更新</span>' : ''}
                         </div>
-                        <div class="flex flex-wrap gap-1 text-[9px]">
-                            ${setDetails}
-                        </div>
+                        <div class="flex flex-wrap gap-1 text-[9px]">${setDetails}</div>
                     </div>`;
             });
         }
@@ -362,11 +357,9 @@
             calendarMonth += dir;
             if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
             if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
-            renderCalendar();
-            document.getElementById('selected-day-log-box').classList.add('hidden');
+            renderCalendar(); document.getElementById('selected-day-log-box').classList.add('hidden');
         }
 
-        // 7部位のセレクトボタン描画
         function renderCategorySelector() {
             const container = document.getElementById('category-selector-grid'); container.innerHTML = '';
             Object.keys(exerciseMaster).forEach(cat => {
@@ -387,8 +380,8 @@
                 container.innerHTML += `
                     <div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900">
                         <div class="text-xs font-black text-gray-500 pl-2">SET ${i}</div>
-                        <input type="number" id="weight-${i}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none focus:border-[#0aadc7]">
-                        <input type="number" id="rep-${i}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none focus:border-[#0aadc7]">
+                        <input type="number" id="weight-${i}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none">
+                        <input type="number" id="rep-${i}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none">
                     </div>`;
             }
         }
@@ -402,23 +395,22 @@
             document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg / ${filtered[1].sets[0].r}r` : 'データなし';
         }
 
-        // 🥳 1RM更新時の紙吹雪演出
         function triggerConfetti() {
             const colors = ['#0aadc7', '#ff007f', '#bd00ff', '#39ff14', '#ffee00'];
-            for (let i = 0; i < 70; i++) {
+            for (let i = 0; i < 60; i++) {
                 const div = document.createElement('div'); div.className = 'confetti';
-                div.style.left = Math.random() * 100 + 'vw';
-                div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                div.style.transform = `scale(${Math.random() * 1.2 + 0.5})`;
-                div.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                document.body.appendChild(div);
-                setTimeout(() => div.remove(), 3500);
+                div.style.left = Math.random() * 100 + 'vw'; div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                div.style.transform = `scale(${Math.random() * 1.2 + 0.5})`; div.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                document.body.appendChild(div); setTimeout(() => div.remove(), 3500);
             }
         }
 
-        // 保存 & 修正の完全ロジック
         function saveLog() {
             const exercise = document.getElementById('log-exercise').value;
+            const chosenDate = document.getElementById('log-date-picker').value; // 指定された日付を取得
+
+            if(!chosenDate) return alert('日付を正しく入力または選択してください。');
+
             let setsData = [];
             for (let i = 1; i <= currentSetCount; i++) {
                 let w = parseFloat(document.getElementById(`weight-${i}`).value);
@@ -432,8 +424,7 @@
             let isPRUpdate = false;
 
             if (previousBestRM === 0 || currentSessionMaxRM > previousBestRM) {
-                isPRUpdate = true;
-                appData.personalBests[exercise] = currentSessionMaxRM;
+                isPRUpdate = true; appData.personalBests[exercise] = currentSessionMaxRM;
                 setTimeout(() => {
                     triggerConfetti();
                     let diff = previousBestRM === 0 ? currentSessionMaxRM : (currentSessionMaxRM - previousBestRM);
@@ -442,42 +433,31 @@
             }
 
             if (activeEditId !== null) {
+                // 修正モード
                 let idx = appData.logs.findIndex(l => l.id === activeEditId);
                 if(idx !== -1) {
-                    appData.logs[idx].sets = setsData;
+                    appData.logs[idx].date = chosenDate; // 修正時の日付変更も適用
+                    appData.logs[idx].sets = setsData; 
                     appData.logs[idx].exercise = exercise;
-                    appData.logs[idx].part = currentCategory;
+                    appData.logs[idx].part = currentCategory; 
                     appData.logs[idx].isPRUpdate = isPRUpdate;
                 }
-                activeEditId = null;
-                document.getElementById('btn-save-workout').innerText = "RECORD WORKOUT SESSION";
+                activeEditId = null; document.getElementById('btn-save-workout').innerText = "RECORD WORKOUT SESSION";
                 alert('トレーニング記録を修正しました！');
             } else {
-                const todayStr = new Date().toISOString().split('T')[0];
-                appData.logs.push({
-                    id: Date.now(),
-                    date: todayStr,
-                    part: currentCategory,
-                    exercise: exercise,
-                    sets: setsData,
-                    isPRUpdate: isPRUpdate
-                });
+                // 新規モード（ユーザーが選んだ日付で保存）
+                appData.logs.push({ id: Date.now(), date: chosenDate, part: currentCategory, exercise: exercise, sets: setsData, isPRUpdate: isPRUpdate });
                 alert('トレーニング記録を保存しました！');
             }
 
-            localStorage.setItem('trainwise_v10_ultimate_full', JSON.stringify(appData));
+            localStorage.setItem('trainwise_core_database', JSON.stringify(appData));
             currentSetCount = 5; renderSetInputs(); renderCalendar(); switchTab('dash');
         }
 
-        // 全トレーニング履歴一覧の描画
         function renderLogList() {
             const container = document.getElementById('log-list-container'); container.innerHTML = '';
             const sorted = [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date));
-            
-            if(sorted.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">履歴データがありません。</p>`;
-                return;
-            }
+            if(sorted.length === 0) { container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">履歴がありません。</p>`; return; }
 
             sorted.forEach(log => {
                 let summary = log.sets.map((s, idx) => `${idx+1}:${s.w}k×${s.r}`).join(' | ');
@@ -485,7 +465,7 @@
                     <div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs">
                         <div class="truncate flex-1 pr-2">
                             <div class="flex items-center space-x-1.5 mb-0.5">
-                                <span class="font-mono text-gray-500 font-bold">${log.date.substring(5)}</span>
+                                <span class="font-mono text-gray-500 font-bold">${log.date}</span>
                                 <span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black">${log.part}</span>
                                 <span class="text-white font-bold truncate">${log.exercise}</span>
                             </div>
@@ -500,16 +480,11 @@
         }
 
         function startEditLog(id) {
-            const log = appData.logs.find(l => l.id === id);
-            if(!log) return;
-            activeEditId = id;
-            
-            switchTab('log');
-            selectCategory(log.part);
+            const log = appData.logs.find(l => l.id === id); if(!log) return;
+            activeEditId = id; switchTab('log'); selectCategory(log.part);
             document.getElementById('log-exercise').value = log.exercise;
-            
-            currentSetCount = Math.max(5, log.sets.length);
-            renderSetInputs();
+            document.getElementById('log-date-picker').value = log.date; // 修正するデータの日付をセット
+            currentSetCount = Math.max(5, log.sets.length); renderSetInputs();
 
             log.sets.forEach((set, i) => {
                 if(document.getElementById(`weight-${i+1}`)) document.getElementById(`weight-${i+1}`).value = set.w;
@@ -519,14 +494,13 @@
         }
 
         function deleteLog(id) {
-            if(!confirm('このログデータを完全に削除しますか？')) return;
+            if(!confirm('完全に削除しますか？')) return;
             appData.logs = appData.logs.filter(l => l.id !== id);
-            localStorage.setItem('trainwise_v10_ultimate_full', JSON.stringify(appData));
+            localStorage.setItem('trainwise_core_database', JSON.stringify(appData));
             renderLogList(); renderCalendar(); updateCharts(currentFilterPart);
             document.getElementById('selected-day-log-box').classList.add('hidden');
         }
 
-        // 📊 グラフコントロール
         let vChart, rChart;
         const baseOptions = {
             responsive: true, maintainAspectRatio: false,
@@ -565,8 +539,7 @@
 
             let volMap = {}; let rmLabels = []; let rmValues = [];
             filtered.forEach(log => {
-                let v = log.sets.reduce((acc, s) => acc + (s.w * s.r), 0);
-                volMap[log.date] = (volMap[log.date] || 0) + v;
+                let v = log.sets.reduce((acc, s) => acc + (s.w * s.r), 0); volMap[log.date] = (volMap[log.date] || 0) + v;
                 let maxRM = Math.max(...log.sets.map(s => s.w * (1 + s.r / 40)));
                 rmLabels.push(log.date.substring(5)); rmValues.push(Math.round(maxRM));
             });
@@ -579,9 +552,8 @@
         }
 
         function saveApiKey() {
-            const key = document.getElementById('gemini-key-input').value.trim();
-            if(!key) return alert('キーを入力してください');
-            localStorage.setItem('gemini_api_key_v10', key);
+            const key = document.getElementById('gemini-key-input').value.trim(); if(!key) return alert('入力してください');
+            localStorage.setItem('trainwise_final_key', key);
             document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`;
         }
 
@@ -592,45 +564,35 @@
             box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl max-w-[88%] ml-auto text-right text-white font-medium">${userText}</div>`;
             input.value = ''; box.scrollTop = box.scrollHeight;
 
-            const apiKey = localStorage.getItem('gemini_api_key_v10');
+            const apiKey = localStorage.getItem('trainwise_final_key');
             if(!apiKey) {
-                setTimeout(() => {
-                    box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>APIキーを設定してください。</div>`;
-                    box.scrollTop = box.scrollHeight;
-                }, 800);
-                return;
+                setTimeout(() => { box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>APIキーを設定してください。</div>`; box.scrollTop = box.scrollHeight; }, 800); return;
             }
 
             const loadingId = 'loading-' + Date.now();
-            box.innerHTML += `<div id="${loadingId}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`;
-            box.scrollTop = box.scrollHeight;
+            box.innerHTML += `<div id="${loadingId}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`; box.scrollTop = box.scrollHeight;
 
             try {
                 const statsSummary = JSON.stringify(appData.logs);
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `ユーザーのトレーニングログ: ${statsSummary}。質問:「${userText}」に対して専門的な分析とモチベーションが上がるアドバイスを簡潔に回答してください。日本語で回答してください。` }] }]
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `ユーザーの全トレーニングログデータ: ${statsSummary}。この客観的データに基づき、質問:「${userText}」へ具体的かつ明確にフィードバックを日本語で返答してください。` }] }] })
                 });
-
-                const data = await response.json();
-                document.getElementById(loadingId).remove();
+                const data = await response.json(); document.getElementById(loadingId).remove();
                 const aiReply = data.candidates[0].content.parts[0].text;
                 box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${aiReply.replace(/\n/g, '<br>')}</div>`;
             } catch (err) {
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="text-red-500 p-2">通信エラーが発生しました。</div>`;
+                box.innerHTML += `<div class="text-red-500 p-2">通信エラー。</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
 
         window.onload = () => {
+            setDefaultLogDate();
             renderCalendar(); selectCategory('胸'); renderSetInputs(); renderCategorySelector(); initCharts(); renderLogList();
-            if(localStorage.getItem('gemini_api_key_v10')) {
-                document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`;
-            }
+            if(localStorage.getItem('trainwise_final_key')) document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`;
         };
     </script>
 </body>
