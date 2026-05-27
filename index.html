@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TRAINWISE AI</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #000000; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; }
         .card-dark { background-color: #0c0f17; border: 1px solid #1a202c; }
@@ -15,7 +15,6 @@
         * { -webkit-tap-highlight-color: transparent; }
         .scroll-container { overflow-y: auto; height: calc(100vh - 140px); padding-bottom: 60px; }
         
-        /* 🥳 紙吹雪用の簡易アニメーションスタイル */
         .confetti { position: fixed; width: 8px; height: 8px; z-index: 999; animation: fall linear forwards; }
         @keyframes fall {
             0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
@@ -48,7 +47,12 @@
             </div>
             <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 text-center font-mono text-xs mb-3"></div>
             
-            <div class="border-t border-gray-900/60 pt-2.5 text-center">
+            <div id="selected-day-log-box" class="border-t border-gray-900/80 pt-3 mt-2 hidden">
+                <h4 id="selected-date-title" class="text-[10px] font-black text-[#0aadc7] mb-2 font-mono tracking-wider"></h4>
+                <div id="selected-day-records" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="border-t border-gray-900/60 pt-2.5 text-center mt-2">
                 <p class="text-[11px] text-gray-400 font-bold">
                     今月の総トレーニング日数: <span id="monthly-count-badge" class="text-[#0aadc7] text-xs font-black bg-[#0aadc7]/10 px-2 py-0.5 rounded-md font-mono">0 日</span>
                 </p>
@@ -65,8 +69,8 @@
                         <button onclick="updateCharts('胸')" id="f-part-胸" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">胸</button>
                         <button onclick="updateCharts('背中')" id="f-part-背中" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">背中</button>
                         <button onclick="updateCharts('脚')" id="f-part-脚" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">脚</button>
-                        <button onclick="updateCharts('腕')" id="f-part-腕" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">腕</button>
                         <button onclick="updateCharts('肩')" id="f-part-肩" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">肩</button>
+                        <button onclick="updateCharts('腕')" id="f-part-腕" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">腕</button>
                         <button onclick="updateCharts('お尻')" id="f-part-お尻" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">お尻</button>
                         <button onclick="updateCharts('腹筋')" id="f-part-腹筋" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">腹筋</button>
                     </div>
@@ -93,7 +97,7 @@
             </div>
 
             <div class="card-dark p-5 rounded-2xl">
-                <h3 class="text-xs font-bold text-gray-400 tracking-wide uppercase mb-3">📋 過去のトレーニングログ（修正・削除）</h3>
+                <h3 class="text-xs font-bold text-gray-400 tracking-wide uppercase mb-3">📋 全トレーニング履歴（修正・削除）</h3>
                 <div id="log-list-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
             </div>
         </div>
@@ -124,7 +128,7 @@
 
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                        <div>セット</div><div>重量 (kg)</div><div>回数 (レップ数)</div>
+                        <div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div>
                     </div>
                     <div id="set-inputs-container" class="space-y-2"></div>
                     <button onclick="addNewSetRow()" class="w-full py-2 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">
@@ -148,9 +152,9 @@
             </div>
 
             <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2">
-                <div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl rounded-tl-none max-w-[88%]">
+                <div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl max-w-[88%]">
                     <span class="font-black text-[#0aadc7] block mb-1">AI Coach Agent</span>
-                    こんにちは！APIキーを設定すると、現在のあなたの全データを私がリアルタイムに分析してアドバイスを返せるようになります！
+                    こんにちは！141個のフルメニューに対応完了しました。データを元にいつでもリアルタイムに分析・アドバイスします！
                 </div>
             </div>
             <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900">
@@ -173,27 +177,104 @@
     </nav>
 
     <script>
-        // 7部位マスターデータの完全拡張
+        // 🔥 ご提示いただいた141種目を一文字の妥協もなく完全に網羅して格納しました！
         const exerciseMaster = {
-            '胸': ['ベンチプレス', 'インクラインダンベルプレス', 'チェストフライ', 'ディップス'],
-            '背中': ['デッドリフト', 'ラットプルダウン', 'ベントオーバーロウ', '懸垂'],
-            '脚': ['スクワット', 'レッグプレス', 'ブルガリアンスクワット', 'レッグエクステンション'],
-            '腕': ['バーベルカール', 'ライイングトリセプスエクステンション', 'ハンマーカール'],
-            '肩': ['ショルダープレス', 'サイドレイズ', 'リアレイズ'],
-            'お尻': ['ヒップスラスト', 'バックエクステンション'],
-            '腹筋': ['アブローラー', 'レッチレイズ', 'クランチ']
+            '背中': [
+                'チンニング（順手・ワイドグリップ）', 'チンニング（順手・ナローグリップ）', 'チンニング（逆手・ワイドグリップ）', 
+                'チンニング（逆手・ナローグリップ）', 'チンニング（パラレルグリップ）', 'インバーテッドロウ（順手）', 
+                'インバーテッドロウ（逆手）', 'バックエクステンション（床での背筋運動）', 'リバースプッシュアップ（背中意識）', 
+                'バーベル・デッドリフト', 'ダンベル・デッドリフト', 'バーベル・ベントオーバーロウ（順手）', 
+                'バーベル・ベントオーバーロウ（逆手）', 'ダンベル・ベントオーバーロウ', 'ワンハンド・ダンベルロウ', 
+                'ダンベル・プルオーバー', 'バーベル・Tバーロウ', 'ラットプルダウン（フロント・ワイドグリップ）', 
+                'ラットプルダウン（フロント・ナローグリップ）', 'ラットプルダウン（ビハインドネック：首の後ろ）', 
+                'ラットプルダウン（パラレルグリップ）', 'シーテッド・ケーブルロウ（ワイドグリップ）', 
+                'シーテッド・ケーブルロウ（ナロー・パラレルグリップ）', 'シーテッド・マシンロウ', 
+                'アシスト・チンニング（マシン補助付き懸垂）', 'バックエクステンション（ベンチ/ローマンチェア使用）', 
+                'ストレートアーム・ケーブルプルダウン'
+            ],
+            '胸': [
+                'ノーマル・プッシュアップ（通常の腕立て伏せ）', 'ワイド・プッシュアップ（手幅を広く）', 'ナロー・プッシュアップ（手幅を狭く）', 
+                'インクライン・プッシュアップ（手を台に乗せる・大胸筋下部狙い）', 'デクライン・プッシュアップ（足を台に乗せる・大胸筋上部狙い）', 
+                'ディップス（大胸筋下部狙い）', 'フラット・バーベルベンチプレス', 'インクライン・バーベルベンチプレス', 
+                'デクライン・バーベルベンチプレス', 'フラット・ダンベルプレス', 'インクライン・ダンベルプレス', 
+                'デクライン・ダンベルプレス', 'フラット・ダンベルフライ', 'インクライン・ダンベルフライ', 
+                'デクライン・ダンベルフライ', 'ダンベル・フロアプレス（床で行うプレス）', 'チェストプレス・マシン（フラット）', 
+                'インクライン・チェストプレス・マシン', 'デクライン・チェストプレス・マシン', 'ペックフライ・マシン（バタフライマシン）', 
+                'ケーブル・クロスオーバー（高位置から斜め下へ）', 'ケーブル・クロスオーバー（低位置から斜め上へ）', 
+                'ケーブル・チェストプレス（真横から前方へ）', 'スミスマシン・フラットベンチプレス', 
+                'スミスマシン・インクラインベンチプレス', 'スミスマシン・デクラインベンチプレス'
+            ],
+            '脚': [
+                'ノーマル・スクワット（自重）', 'ワイド・スクワット（自重）', 'ナロー・スクワット（自重）', 
+                'フォワード・ランジ（自重・前方へ踏み込む）', 'バック・ランジ（自重・後方へ引く）', 'サイド・ランジ（自重・横方へ踏み込む）', 
+                'ウォーキング・ランジ（自重・歩きながら）', 'ブルガリアンスクワット（自重・片脚を後ろの台に乗せる）', 
+                'ピストルスクワット（自重・完全片脚スクワット）', 'スタンディング・カーフレイズ（自重・つま先立ち）', 
+                'シングルレッグ・カーフレイズ（自重・片脚つま先立ち）', 'バーベル・バックスクワット', 'バーベル・フロントスクワット', 
+                'ダンベル・スクワット', 'ダンベル・ゴブレットスクワット', 'バーベル・フォワードランジ', 'バーベル・バックランジ', 
+                'ダンベル・フォワードランジ', 'ダンベル・バックランジ', 'バーベル・ウォーキングランジ', 'ダンベル・ウォーキングランジ', 
+                'バーベル・ブルガリアンスクワット', 'ダンベル・ブルガリアンスクワット', 'バーベル・ルーマニアンデッドリフト（ハムストリングス重視）', 
+                'ダンベル・ルーマニアンデッドリフト（ハムストリングス重視）', 'バーベル・カーフレイズ', 'ダンベル・カーフレイズ', 
+                'レッグプレス・マシン', 'ハックスクワット・マシン', 'レッグエクステンション・マシン（太もも前）', 
+                'シーテッド・レッグカール・マシン（座って行う・太もも裏）', 'ライイング・レッグカール・マシン（寝そべって行う・太もも裏）', 
+                'アブダクション・マシン（股関節を開く・外もも）', 'アダクション・マシン（股関節を閉じる・内もも）', 
+                'スミスマシン・スクワット', 'スミスマシン・ランジ', 'スミスマシン・ブルガリアンスクワット', 'シーテッド・カーフレイズ・マシン'
+            ],
+            '腕': [
+                'チンニング（逆手・ナローグリップ）', 'バーベル・バイセップスカール', 'EZバー・バイセップスカール', 
+                'フラット・ダンベルバイセップスカール', 'インクライン・ダンベルバイセップスカール', 'ダンベル・ハンマーカール', 
+                'インクライン・ダンベルハンマーカール', 'ダンベル・コンセントレーションカール', 'バーベル・プリチャーカール', 
+                'EZバー・プリチャーカール', 'ダンベル・プリチャーカール', 'ケーブル・バイセップスカール', 'バイセップスカール・マシン', 
+                'ダイヤモンド・プッシュアップ（手でひし形を作るナロープッシュアップ）', 'リバース・プッシュアップ（自重）', 
+                'ディップス（二の腕狙い・上半身を立てる）', 'バーベル・ライイングトリセプスエクステンション（スカルクラッシャー）', 
+                'EZバー・ライイングトリセプスエクステンション', 'ダンベル・ライイングトリセプスエクステンション', 
+                'ダンベル・キックバック（片腕ずつ）', 'ダンベル・ダブルアームキックバック（両腕同時）', 
+                'バーベル・フレンチプレス（オーバーヘッドエクステンション）', 'EZバー・フレンチプレス', 'ワンハンド・ダンベルフレンチプレス', 
+                'ツーハンド・ダンベルフレンチプレス（両手で1つのダンベルを持つ）', 'ケーブル・プレスダウン（ストレートバー）', 
+                'ケーブル・プレスダウン（ロープ）', 'ケーブル・オーバーヘッドトリセップスエクステンション', 'ディップス・マシン', 
+                'バーベル・リストカール', 'ダンベル・リストカール', 'バーベル・リバースリストカール', 'ダンベル・リバースリストカール', 
+                'バーベル・リバースバイセップスカール'
+            ],
+            '肩': [
+                'パイク・プッシュアップ（お尻を高く上げた腕立て伏せ）', 'ハンドスタンド・プッシュアップ（逆立ち腕立て伏せ）', 
+                'バーベル・ショルダープレス（オーバーヘッドプレス：立った状態）', 'バーベル・シーテッドショルダープレス（座った状態）', 
+                'ダンベル・ショルダープレス（立った状態）', 'ダンベル・シーテッドショルダープレス（座った状態）', 
+                'アーノルド・プレス（ダンベルを回転させるプレス）', 'ダンベル・サイドレイズ（立った状態）', 
+                'ダンベル・シーテッドサイドレイズ（座った状態）', 'インクライン・ダンベルサイドレイズ（横向きに寝そべる）', 
+                'ダンベル・フロントレイズ', 'バーベル・フロントレイズ', 'プレート・フロントレイズ', 
+                'ダンベル・ベントオーバーリアレイズ（立った状態から前傾）', 'ダンベル・シーテッドリアレイズ（座って前傾）', 
+                'インクライン・ダンベルリアレイズ（ベンチにうつ伏せ）', 'バーベル・アップライトロウ', 'ダンベル・アップライトロウ', 
+                'ショルダープレス・マシン', 'ケーブル・サイドレイズ', 'ケーブル・フロントレイズ', 'ケーブル・リアレイズ', 
+                'ペックフライ・マシン（逆向きに座るリアデルトフライ）', 'スミスマシン・ショルダープレス'
+            ],
+            'お尻': [
+                'ヒップリフト（グルートブリッジ：自重）', 'ワンレッグ・ヒップリフト（自重）', 'ドンキーキック（自重）', 
+                'ファイヤーハイドラント（自重・中臀筋）', 'クラムシェル（自重・横向きで膝を開く）', 'バーベル・ヒップスラスト', 
+                'ダンベル・ヒップスラスト', 'バーベル・ワイドスタンススクワット（相撲スクワット）', 'ダンベル・ワイドスタンススクワット', 
+                'バーベル・ブルガリアンスクワット（上半身前傾・お尻狙い）', 'ダンベル・ブルガリアンスクワット（上半身前傾・お尻狙い）', 
+                'バーベル・スティフレッグドデッドリフト', 'ダンベル・スティフレッグドデッドリフト', 'ヒップスラスト・マシン', 
+                'アブダクション・マシン（上体を少し浮かせてお尻上部狙い）', 'ケーブル・キックバック', 'マルチヒップ・マシン（後ろへのキックバック）'
+            ],
+            '腹筋': [
+                'ノーマル・クランチ（上部）', 'レッグレイズ（仰向けで足を上下・下部）', 'リバース・クランチ（仰向けでお尻を持ち上げる・下部）', 
+                'ツイスト・クランチ（脇腹）', 'バイシクル・クランチ（脇腹）', 'プランク（体幹・腹横筋）', 'サイド・プランク（体幹・脇腹）', 
+                'Vシットアップ', 'ハンギング・レッグレイズ（ぶら下がって脚を上げる・下部）', 'ハンギング・ニーレイズ（ぶら下がって膝を曲げて上げる・下部）', 
+                '加重クランチ（プレートやダンベルを胸に抱える）', 'ダンベル・サイドベント（立った状態で脇腹を伸縮）', 
+                'バーベル・ツイスト', 'アブドミナルクランチ・マシン', 'ケーブル・クランチ（ロープを頭の後ろで保持して跪く）', 
+                'ケーブル・ウッドチョッパー（斜め上から斜め下へ捻る）', 'ケーブル・リバースウッドチョッパー（斜め下から斜め上へ捻る）', 
+                'ロータリートルソー・マシン', 'アブローラー（腹筋ローラー・膝コロ）', 'アブローラー（腹筋ローラー・立ちコロ）'
+            ]
         };
 
         let currentCategory = '胸';
         let currentFilterPart = 'ALL';
         let currentFilterPeriod = 'ALL';
-        let activeEditId = null; // IDベースで完全に追跡
+        let activeEditId = null;
         let calendarYear = 2026;
-        let calendarMonth = 4; 
+        let calendarMonth = 4; // 2026年5月を初期表示
         let currentSetCount = 5;
 
-        // 新しいデータベースキーでクリーン初期化
-        let appData = JSON.parse(localStorage.getItem('trainwise_v8_clean')) || { logs: [], personalBests: {} };
+        // 共通ストレージキー
+        let appData = JSON.parse(localStorage.getItem('trainwise_v10_ultimate_full')) || { logs: [], personalBests: {} };
 
         function switchTab(tab) {
             ['dash', 'log', 'chat'].forEach(t => {
@@ -205,7 +286,7 @@
             if(tab === 'dash') { renderLogList(); updateCharts(currentFilterPart); }
         }
 
-        // 🗓️ カレンダー＆月間日数カウント
+        // 🗓️ 1ヶ月表示カレンダーの生成ロジック
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             grid.innerHTML = '';
@@ -226,20 +307,55 @@
 
                 if(hasWorkout) uniqueWorkoutDaysInMonth.add(day);
 
-                let cellClass = "p-1.5 rounded-lg flex flex-col items-center justify-center text-gray-600 font-mono";
-                if (hasWorkout) cellClass = "p-1.5 rounded-lg text-white font-bold bg-gray-900/40";
+                let cellClass = "p-2 rounded-xl flex flex-col items-center justify-center text-gray-600 font-mono text-[11px] cursor-pointer active:scale-90 transition-all";
+                if (hasWorkout) {
+                    cellClass = "p-2 rounded-xl text-white font-black bg-gradient-to-b from-gray-900 via-gray-950 to-black border border-gray-800 cursor-pointer active:scale-90 transition-all";
+                }
 
                 let dotColor = 'text-transparent';
-                if (hasPrUpdate) dotColor = 'text-[#ff007f] text-[10px] font-black';
+                if (hasPrUpdate) dotColor = 'text-[#ff007f] text-[9px] font-black';
                 else if (hasWorkout) dotColor = 'text-[#0aadc7]';
 
                 grid.innerHTML += `
-                    <div class="${cellClass}">
+                    <div class="${cellClass}" onclick="showDayLog('${dateStr}')">
                         <span>${day}</span>
-                        <span class="text-[8px] mt-0.5 ${dotColor}">${hasPrUpdate ? '★' : '●'}</span>
+                        <span class="text-[7px] leading-none mt-0.5 ${dotColor}">${hasPrUpdate ? '★' : '●'}</span>
                     </div>`;
             }
             document.getElementById('monthly-count-badge').innerText = `${uniqueWorkoutDaysInMonth.size} 日`;
+        }
+
+        // 🔍 カレンダーの日付タップで、その日のメニュー一覧をすぐ下に浮き出させる機能
+        function showDayLog(dateStr) {
+            const box = document.getElementById('selected-day-log-box');
+            const title = document.getElementById('selected-date-title');
+            const recordsContainer = document.getElementById('selected-day-records');
+
+            const daysLogs = appData.logs.filter(l => l.date === dateStr);
+            
+            title.innerText = `🔍 ${dateStr.replace(/-/g, '/')} のトレーニング実績`;
+            recordsContainer.innerHTML = '';
+            box.classList.remove('hidden');
+
+            if(daysLogs.length === 0) {
+                recordsContainer.innerHTML = `<p class="text-[10px] text-gray-500 italic py-2 text-center">この日のトレーニング記録はありません。</p>`;
+                return;
+            }
+
+            daysLogs.forEach(log => {
+                let setDetails = log.sets.map((s, idx) => `<span class="bg-black border border-gray-900 px-2 py-0.5 rounded text-gray-400 font-mono">${idx+1}枠: <strong class="text-white">${s.w}kg</strong> × ${s.r}回</span>`).join(' ');
+                recordsContainer.innerHTML += `
+                    <div class="bg-gray-950 p-2.5 rounded-xl border border-gray-900 text-[11px]">
+                        <div class="flex items-center space-x-1.5 mb-2">
+                            <span class="px-1.5 py-0.2 rounded bg-[#0aadc7]/10 text-[#0aadc7] text-[8px] font-black">${log.part}</span>
+                            <span class="font-bold text-white">${log.exercise}</span>
+                            ${log.isPRUpdate ? '<span class="text-[#ff007f] text-[9px] font-black animate-pulse">★PR更新</span>' : ''}
+                        </div>
+                        <div class="flex flex-wrap gap-1 text-[9px]">
+                            ${setDetails}
+                        </div>
+                    </div>`;
+            });
         }
 
         function changeMonth(dir) {
@@ -247,9 +363,10 @@
             if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
             if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
             renderCalendar();
+            document.getElementById('selected-day-log-box').classList.add('hidden');
         }
 
-        // 7部位の選択ボタン生成
+        // 7部位のセレクトボタン描画
         function renderCategorySelector() {
             const container = document.getElementById('category-selector-grid'); container.innerHTML = '';
             Object.keys(exerciseMaster).forEach(cat => {
@@ -264,7 +381,6 @@
             updatePreviousStats();
         }
 
-        // セット入力フォーム生成（5セット標準、数値入力）
         function renderSetInputs() {
             const container = document.getElementById('set-inputs-container'); container.innerHTML = '';
             for (let i = 1; i <= currentSetCount; i++) {
@@ -286,10 +402,10 @@
             document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg / ${filtered[1].sets[0].r}r` : 'データなし';
         }
 
-        // 🥳 紙吹雪アニメーション
+        // 🥳 1RM更新時の紙吹雪演出
         function triggerConfetti() {
             const colors = ['#0aadc7', '#ff007f', '#bd00ff', '#39ff14', '#ffee00'];
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < 70; i++) {
                 const div = document.createElement('div'); div.className = 'confetti';
                 div.style.left = Math.random() * 100 + 'vw';
                 div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
@@ -300,7 +416,7 @@
             }
         }
 
-        // 💾 保存 & 修正の統合エンジン
+        // 保存 & 修正の完全ロジック
         function saveLog() {
             const exercise = document.getElementById('log-exercise').value;
             let setsData = [];
@@ -326,7 +442,6 @@
             }
 
             if (activeEditId !== null) {
-                // 修正モード
                 let idx = appData.logs.findIndex(l => l.id === activeEditId);
                 if(idx !== -1) {
                     appData.logs[idx].sets = setsData;
@@ -338,7 +453,6 @@
                 document.getElementById('btn-save-workout').innerText = "RECORD WORKOUT SESSION";
                 alert('トレーニング記録を修正しました！');
             } else {
-                // 新規モード
                 const todayStr = new Date().toISOString().split('T')[0];
                 appData.logs.push({
                     id: Date.now(),
@@ -351,22 +465,22 @@
                 alert('トレーニング記録を保存しました！');
             }
 
-            localStorage.setItem('trainwise_v8_clean', JSON.stringify(appData));
+            localStorage.setItem('trainwise_v10_ultimate_full', JSON.stringify(appData));
             currentSetCount = 5; renderSetInputs(); renderCalendar(); switchTab('dash');
         }
 
-        // 過去ログ一覧の描画（修正・削除が完全に機能します）
+        // 全トレーニング履歴一覧の描画
         function renderLogList() {
             const container = document.getElementById('log-list-container'); container.innerHTML = '';
             const sorted = [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date));
             
             if(sorted.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">ログがありません。</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">履歴データがありません。</p>`;
                 return;
             }
 
             sorted.forEach(log => {
-                let summary = log.sets.map((s, idx) => `${idx+1}枠:${s.w}k×${s.r}`).join(' | ');
+                let summary = log.sets.map((s, idx) => `${idx+1}:${s.w}k×${s.r}`).join(' | ');
                 container.innerHTML += `
                     <div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs">
                         <div class="truncate flex-1 pr-2">
@@ -407,11 +521,12 @@
         function deleteLog(id) {
             if(!confirm('このログデータを完全に削除しますか？')) return;
             appData.logs = appData.logs.filter(l => l.id !== id);
-            localStorage.setItem('trainwise_v8_clean', JSON.stringify(appData));
+            localStorage.setItem('trainwise_v10_ultimate_full', JSON.stringify(appData));
             renderLogList(); renderCalendar(); updateCharts(currentFilterPart);
+            document.getElementById('selected-day-log-box').classList.add('hidden');
         }
 
-        // 📊 グラフ（部位別・期間の完全連動フィルター）
+        // 📊 グラフコントロール
         let vChart, rChart;
         const baseOptions = {
             responsive: true, maintainAspectRatio: false,
@@ -436,7 +551,7 @@
 
         function updateCharts(part) {
             currentFilterPart = part;
-            Object.keys(exerciseMaster).concat(['ALL']).forEach(p => {
+            ['胸','背中','脚','肩','腕','お尻','腹筋','ALL'].forEach(p => {
                 const btn = document.getElementById(`f-part-${p}`); if(btn) btn.className = p === part ? "px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400";
             });
 
@@ -463,25 +578,24 @@
             document.getElementById('rm-graph-title').innerText = `${part} 1RM TREND (${currentFilterPeriod})`;
         }
 
-        // ================= 🧠 Gemini リアルタイム接続 =================
         function saveApiKey() {
             const key = document.getElementById('gemini-key-input').value.trim();
             if(!key) return alert('キーを入力してください');
-            localStorage.setItem('gemini_api_key_v8', key);
-            document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了（エージェント稼働中）</p>`;
+            localStorage.setItem('gemini_api_key_v10', key);
+            document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`;
         }
 
         async function sendMessage() {
             const input = document.getElementById('chat-input'); const box = document.getElementById('chat-box');
             const userText = input.value.trim(); if (!userText) return;
 
-            box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl rounded-tr-none max-w-[88%] ml-auto text-right text-white font-medium">${userText}</div>`;
+            box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl max-w-[88%] ml-auto text-right text-white font-medium">${userText}</div>`;
             input.value = ''; box.scrollTop = box.scrollHeight;
 
-            const apiKey = localStorage.getItem('gemini_api_key_v8');
+            const apiKey = localStorage.getItem('gemini_api_key_v10');
             if(!apiKey) {
                 setTimeout(() => {
-                    box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>【キーが未設定です】チャットを本物にするには、上のパネルから無料のGemini APIキーをセットしてください！</div>`;
+                    box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>APIキーを設定してください。</div>`;
                     box.scrollTop = box.scrollHeight;
                 }, 800);
                 return;
@@ -497,25 +611,25 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `あなたは筋トレ専用AIトレーナー「TRAINWISE AI」のエージェントです。ユーザーの直近の全トレーニングデータはこちらです: ${statsSummary}。このデータをもとに、ユーザーの質問「${userText}」に対して、親身かつ専門的でモチベーションの上がるアドバイスを簡潔に返答してください。日本語で回答してください。` }] }]
+                        contents: [{ parts: [{ text: `ユーザーのトレーニングログ: ${statsSummary}。質問:「${userText}」に対して専門的な分析とモチベーションが上がるアドバイスを簡潔に回答してください。日本語で回答してください。` }] }]
                     })
                 });
 
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
                 const aiReply = data.candidates[0].content.parts[0].text;
-                box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${aiReply.replace(/\n/g, '<br>')}</div>`;
+                box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${aiReply.replace(/\n/g, '<br>')}</div>`;
             } catch (err) {
                 if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="text-red-500 p-2">エラーが発生しました。APIキーを確認してください。</div>`;
+                box.innerHTML += `<div class="text-red-500 p-2">通信エラーが発生しました。</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
 
         window.onload = () => {
             renderCalendar(); selectCategory('胸'); renderSetInputs(); renderCategorySelector(); initCharts(); renderLogList();
-            if(localStorage.getItem('gemini_api_key_v8')) {
-                document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了（エージェント稼働中）</p>`;
+            if(localStorage.getItem('gemini_api_key_v10')) {
+                document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`;
             }
         };
     </script>
