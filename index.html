@@ -14,6 +14,13 @@
         .active-tab { color: #0aadc7; font-weight: 900; }
         * { -webkit-tap-highlight-color: transparent; }
         .scroll-container { overflow-y: auto; height: calc(100vh - 140px); padding-bottom: 60px; }
+        
+        /* 🥳 紙吹雪用の簡易アニメーションスタイル */
+        .confetti { position: fixed; width: 8px; height: 8px; z-index: 999; animation: fall linear forwards; }
+        @keyframes fall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen flex flex-col justify-between relative bg-black select-none">
@@ -39,12 +46,16 @@
             <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-gray-600 uppercase mb-1">
                 <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
             </div>
-            <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 text-center font-mono text-xs">
-                </div>
+            <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 text-center font-mono text-xs mb-3"></div>
+            
+            <div class="border-t border-gray-900/60 pt-2.5 text-center">
+                <p class="text-[11px] text-gray-400 font-bold">
+                    今月の総トレーニング日数: <span id="monthly-count-badge" class="text-[#0aadc7] text-xs font-black bg-[#0aadc7]/10 px-2 py-0.5 rounded-md font-mono">0 日</span>
+                </p>
+            </div>
         </section>
 
         <div id="content-dash" class="space-y-6">
-            
             <div class="space-y-3 bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900">
                 <div class="flex flex-col space-y-2">
                     <span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">部位フィルター:</span>
@@ -81,19 +92,16 @@
             </div>
 
             <div class="card-dark p-5 rounded-2xl">
-                <h3 class="text-xs font-bold text-gray-400 tracking-wide uppercase mb-3">📋 過去のトレーニングログ（修正・削除）</h3>
-                <div id="log-list-container" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-                    </div>
+                <h3 class="text-xs font-bold text-gray-400 tracking-wide uppercase mb-3">📋 過去のトレーニングログ</h3>
+                <div id="log-list-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
             </div>
         </div>
 
         <div id="content-log" class="hidden space-y-6">
             <div class="card-dark p-5 rounded-2xl space-y-5">
-                
                 <div>
                     <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. 対象部位</label>
-                    <div class="grid grid-cols-4 gap-1.5" id="category-selector-grid">
-                        </div>
+                    <div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div>
                 </div>
 
                 <div>
@@ -106,7 +114,7 @@
                         <span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀ 前回実績</span>
                         <span id="stat-prev" class="text-xs font-mono font-bold text-[#0aadc7]">データなし</span>
                     </div>
-                    <div class="border-l border-gray-900">
+                    <div>
                         <span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀◀ 前々回実績</span>
                         <span id="stat-prev2" class="text-xs font-mono font-bold text-gray-400">データなし</span>
                     </div>
@@ -114,27 +122,33 @@
 
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                        <div>セット</div><div>重量 (kg)</div><div>回数 (レップ数入力)</div>
+                        <div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div>
                     </div>
-                    <div id="set-inputs-container" class="space-y-2">
-                        </div>
+                    <div id="set-inputs-container" class="space-y-2"></div>
                     <button onclick="addNewSetRow()" class="w-full py-2 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">
-                        ＋ セットを追加 (第6セット以降)
+                        ＋ セットを追加
                     </button>
                 </div>
 
-                <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] hover:bg-[#099cb3] text-black font-black py-4 rounded-xl text-sm shadow-xl shadow-[#0aadc7]/10 transition-all active:scale-[0.98]">
+                <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] hover:bg-[#099cb3] text-black font-black py-4 rounded-xl text-sm shadow-xl transition-all active:scale-[0.98]">
                     RECORD WORKOUT SESSION
                 </button>
             </div>
         </div>
 
         <div id="content-chat" class="hidden flex flex-col h-[60vh] justify-between">
+            <div id="api-key-panel" class="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl text-center text-xs space-y-2 mb-3">
+                <p class="text-amber-400 font-bold">⚠️ Geminiとの本物のチャットをONにする</p>
+                <div class="flex space-x-1">
+                    <input type="password" id="gemini-key-input" placeholder="AIの鍵（API Key）を入力..." class="flex-1 bg-black border border-gray-800 rounded p-1.5 text-center font-mono text-white text-[11px]">
+                    <button onclick="saveApiKey()" class="bg-amber-500 text-black px-3 font-bold rounded text-[11px]">有効化</button>
+                </div>
+            </div>
+
             <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2">
                 <div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl rounded-tl-none max-w-[88%]">
                     <span class="font-black text-[#0aadc7] block mb-1">AI Coach Agent</span>
-                    最新の7部位セグメントデータ、および過去のログ修正データをインテリジェントに同期しました。
-                    現在のトレーニングボリュームと停滞打開策について、何でも相談してください。
+                    こんにちは！APIキーを設定すると、現在のあなたの全データ（グラフや過去ログ）を私がリアルタイムに分析して、今と同じようにアドバイスを返せるようになります！
                 </div>
             </div>
             <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900">
@@ -144,54 +158,39 @@
         </div>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-gray-950 max-w-md mx-auto backdrop-blur-md flex justify-around items-center h-16 text-center z-50">
+    <nav class="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-gray-950 max-w-md mx-auto flex justify-around items-center h-16 text-center z-50">
         <button onclick="switchTab('dash')" id="nav-dash" class="flex-1 h-full flex flex-col justify-center items-center text-xs font-bold active-tab">
-            <span class="text-base mb-0.5">📊</span><span>ダッシュボード</span>
+            <span class="text-base mb-0.5">📊</span><span>分析</span>
         </button>
         <button onclick="switchTab('log')" id="nav-log" class="flex-1 h-full flex flex-col justify-center items-center text-xs font-bold text-gray-600">
             <span class="text-base mb-0.5">🏋️‍♂️</span><span>記録入力</span>
         </button>
         <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 h-full flex flex-col justify-center items-center text-xs font-bold text-gray-600">
-            <span class="text-base mb-0.5">🧠</span><span>AIエージェント</span>
+            <span class="text-base mb-0.5">🧠</span><span>AI相談</span>
         </button>
     </nav>
 
     <script>
-        // 1. 7部位マスターデータの定義
         const exerciseMaster = {
             '胸': ['ベンチプレス', 'インクラインダンベルプレス', 'チェストフライ'],
             '背中': ['デッドリフト', 'ラットプルダウン', 'ベントオーバーロウ'],
             '脚': ['スクワット', 'レッグプレス', 'ブルガリアンスクワット'],
-            '腕': ['バーベルカール', 'ライイングトリセプスエクテンション', 'ハンマーカール'],
-            '肩': ['ショルダープレス', 'サイドレイズ', 'リアレイズ'],
-            'お尻': ['ヒップスラスト', 'バックエクステンション'],
-            '腹筋': ['クランチ', 'レッグレイズ', 'アブローラー']
+            '腕': ['バーベルカール', 'ライイングトリセプス'],
+            '肩': ['ショルダープレス', 'サイドレイズ'],
+            'お尻': ['ヒップスラスト'],
+            '腹筋': ['アブローラー', 'レッグレイズ']
         };
 
         let currentCategory = '胸';
         let currentFilterPart = 'ALL';
         let currentFilterPeriod = 'ALL';
-        let activeEditIndex = null; // 修正モード用フラグ
-
-        // カレンダー用状態管理 (2026年5月基準)
+        let activeEditIndex = null;
         let calendarYear = 2026;
-        let calendarMonth = 4; // 0始まりなので5月
-
-        // 標準表示セットカウント
+        let calendarMonth = 4; 
         let currentSetCount = 5;
 
-        // 2. データベースの初期化と完全復元
-        let appData = JSON.parse(localStorage.getItem('trainwise_v6_final')) || {
-            logs: [
-                { id: 1, date: '2026-05-22', part: '胸', exercise: 'ベンチプレス', sets: [{w:90, r:5}, {w:80, r:7}, {w:70, r:8}] },
-                { id: 2, date: '2026-05-24', part: '胸', exercise: 'ベンチプレス', sets: [{w:95, r:5}, {w:85, r:6}, {w:75, r:7}] },
-                { id: 3, date: '2026-05-26', part: '胸', exercise: 'ベンチプレス', sets: [{w:95, r:5}, {w:85, r:6}, {w:75, r:7}] },
-                { id: 4, date: '2026-05-28', part: '胸', exercise: 'ベンチプレス', sets: [{w:95, r:5}, {w:85, r:6}, {w:75, r:7}] },
-                { id: 5, date: '2026-05-25', part: '脚', exercise: 'スクワット', sets: [{w:120, r:5}, {w:110, r:6}] }
-            ]
-        };
+        let appData = JSON.parse(localStorage.getItem('trainwise_v7_data')) || { logs: [], personalBests: {} };
 
-        // タブ制御
         function switchTab(tab) {
             ['dash', 'log', 'chat'].forEach(t => {
                 document.getElementById(`content-${t}`).classList.add('hidden');
@@ -202,7 +201,7 @@
             if(tab === 'dash') { renderLogList(); updateCharts(currentFilterPart); }
         }
 
-        // 3. 1ヶ月表示カレンダー生成エンジン
+        // 🗓️ カレンダー＆月間日数カウントロジック
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             grid.innerHTML = '';
@@ -211,28 +210,40 @@
             const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
             const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
 
-            // 空白埋め
-            for (let i = 0; i < firstDay; i++) {
-                grid.innerHTML += `<div class="p-1.5 opacity-0"></div>`;
-            }
+            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
 
-            // 日付描写
+            let uniqueWorkoutDaysInMonth = new Set();
+
             for (let day = 1; day <= totalDays; day++) {
                 const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const hasWorkout = appData.logs.some(l => l.date === dateStr);
-                const isToday = new Date().getDate() === day && new Date().getMonth() === calendarMonth && new Date().getFullYear() === calendarYear;
+                
+                // その日のログを抽出
+                const daysLogs = appData.logs.filter(l => l.date === dateStr);
+                const hasWorkout = daysLogs.length > 0;
+                
+                // 期間中に1RM更新（過去最高）があったかチェックするフラグ
+                const hasPrUpdate = daysLogs.some(l => l.isPRUpdate);
 
-                let cellClass = "p-1.5 rounded-lg flex flex-col items-center justify-center text-gray-500";
-                if (isToday) cellClass = "p-1.5 rounded-lg bg-[#0aadc7]/10 border border-[#0aadc7]/40 text-[#81e6d9] font-black";
-                else if (hasWorkout) cellClass = "p-1.5 rounded-lg text-white font-bold";
+                if(hasWorkout) uniqueWorkoutDaysInMonth.add(day);
+
+                let cellClass = "p-1.5 rounded-lg flex flex-col items-center justify-center text-gray-600 font-mono";
+                if (hasWorkout) cellClass = "p-1.5 rounded-lg text-white font-bold bg-gray-900/40";
+
+                // 🔥 RM更新時はカレンダーの丸ポチをネオンピンク（#ff007f）にして差別化！
+                let dotColor = 'text-transparent';
+                if (hasPrUpdate) dotColor = 'text-[#ff007f] text-[10px]';
+                else if (hasWorkout) dotColor = 'text-[#0aadc7]';
 
                 grid.innerHTML += `
                     <div class="${cellClass}">
                         <span>${day}</span>
-                        <span class="text-[8px] mt-0.5 ${hasWorkout ? 'text-[#0aadc7]' : 'text-transparent'}">●</span>
+                        <span class="text-[8px] mt-0.5 ${dotColor}">${hasPrUpdate ? '★' : '●'}</span>
                     </div>
                 `;
             }
+
+            // 月間合計日数を画面に反映
+            document.getElementById('monthly-count-badge').innerText = `${uniqueWorkoutDaysInMonth.size} 日`;
         }
 
         function changeMonth(dir) {
@@ -242,257 +253,226 @@
             renderCalendar();
         }
 
-        // 4. 記録入力側：7部位・動的セット生成ロジック
         function renderCategorySelector() {
-            const container = document.getElementById('category-selector-grid');
-            container.innerHTML = '';
+            const container = document.getElementById('category-selector-grid'); container.innerHTML = '';
             Object.keys(exerciseMaster).forEach(cat => {
-                const isActive = cat === currentCategory;
-                container.innerHTML += `
-                    <button onclick="selectCategory('${cat}')" class="py-2 rounded-xl text-[11px] font-bold ${isActive ? 'bg-[#0aadc7] text-black' : 'bg-gray-900 text-gray-400'} border border-transparent">${cat}</button>
-                `;
+                container.innerHTML += `<button onclick="selectCategory('${cat}')" class="py-2 rounded-xl text-[10px] font-bold ${cat === currentCategory ? 'bg-[#0aadc7] text-black' : 'bg-gray-900 text-gray-400'}">${cat}</button>`;
             });
         }
 
         function selectCategory(cat) {
-            currentCategory = cat;
-            renderCategorySelector();
-            const select = document.getElementById('log-exercise');
-            select.innerHTML = '';
-            exerciseMaster[cat].forEach(ex => {
-                select.innerHTML += `<option value="${ex}">${ex}</option>`;
-            });
+            currentCategory = cat; renderCategorySelector();
+            const select = document.getElementById('log-exercise'); select.innerHTML = '';
+            exerciseMaster[cat].forEach(ex => select.innerHTML += `<option value="${ex}">${ex}</option>`);
             updatePreviousStats();
         }
 
         function renderSetInputs() {
-            const container = document.getElementById('set-inputs-container');
-            container.innerHTML = '';
+            const container = document.getElementById('set-inputs-container'); container.innerHTML = '';
             for (let i = 1; i <= currentSetCount; i++) {
                 container.innerHTML += `
                     <div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900">
-                        <div class="text-xs font-black text-gray-500 pl-2">SET {index}</div>
-                        <input type="number" id="weight-{index}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none focus:border-[#0aadc7]">
-                        <input type="number" id="rep-{index}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none focus:border-[#0aadc7]">
-                    </div>
-                `.replace(/{index}/g, i);
+                        <div class="text-xs font-black text-gray-500 pl-2">SET ${i}</div>
+                        <input type="number" id="weight-${i}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none">
+                        <input type="number" id="rep-${i}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none">
+                    </div>`;
             }
         }
 
-        function addNewSetRow() {
-            currentSetCount++;
-            renderSetInputs();
-        }
+        function addNewSetRow() { currentSetCount++; renderSetInputs(); }
 
-        // 直近2回の実績算出
         function updatePreviousStats() {
-            const exercise = document.getElementById('log-exercise').value;
-            const filtered = appData.logs.filter(l => l.exercise === exercise).sort((a,b) => new Date(b.date) - new Date(a.date));
-            
-            document.getElementById('stat-prev').innerText = filtered[0] ? `${filtered[0].sets[0].w}kg / ${filtered[0].sets[0].r}r` : 'データなし';
-            document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg / ${filtered[1].sets[0].r}r` : 'データなし';
+            const ex = document.getElementById('log-exercise').value;
+            const filtered = appData.logs.filter(l => l.exercise === ex).sort((a,b) => new Date(b.date) - new Date(a.date));
+            document.getElementById('stat-prev').innerText = filtered[0] ? `${filtered[0].sets[0].w}kg / ${filtered[0].sets[0].r}r` : 'なし';
+            document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg / ${filtered[1].sets[0].r}r` : 'なし';
         }
 
-        // 5. データ保存・修正・削除コアエンジン
+        // 🥳 画面にド派手な紙吹雪を撒き散らす演出ロジック
+        function triggerConfetti() {
+            const colors = ['#0aadc7', '#ff007f', '#bd00ff', '#39ff14', '#ffee00'];
+            for (let i = 0; i < 100; i++) {
+                const div = document.createElement('div');
+                div.className = 'confetti';
+                div.style.left = Math.random() * 100 + 'vw';
+                div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                div.style.transform = `scale(${Math.random() * 1.5 + 0.5})`;
+                div.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+                div.style.animationDelay = Math.random() * 0.4 + 's';
+                document.body.appendChild(div);
+                setTimeout(() => div.remove(), 3500);
+            }
+        }
+
+        // セッション保存と1RM更新チェック
         function saveLog() {
             const exercise = document.getElementById('log-exercise').value;
             let setsData = [];
-
             for (let i = 1; i <= currentSetCount; i++) {
                 let w = parseFloat(document.getElementById(`weight-${i}`).value);
                 let r = parseInt(document.getElementById(`rep-${i}`).value);
                 if (w && r) setsData.push({ w: w, r: r });
             }
+            if (setsData.length === 0) return alert('入力してください');
 
-            if (setsData.length === 0) return alert('重量とレップ数を入力してください。');
+            // 今回のセッションでの最高推定1RMを計算
+            let currentSessionMaxRM = Math.max(...setsData.map(s => s.w * (1 + s.r / 40)));
+            currentSessionMaxRM = Math.round(currentSessionMaxRM);
 
-            if (activeEditIndex !== null) {
-                // 修正保存モード
-                appData.logs[activeEditIndex].sets = setsData;
-                appData.logs[activeEditIndex].exercise = exercise;
-                appData.logs[activeEditIndex].part = currentCategory;
-                activeEditIndex = null;
-                document.getElementById('btn-save-workout').innerText = "RECORD WORKOUT SESSION";
-                alert('トレーニング記録を修正しました！');
-            } else {
-                // 新規保存モード
-                const todayStr = new Date().toISOString().split('T')[0];
-                appData.logs.push({
-                    id: Date.now(),
-                    date: todayStr,
-                    part: currentCategory,
-                    exercise: exercise,
-                    sets: setsData
-                });
-                alert('トレーニング記録を保存しました！');
+            // 過去のその種目の最高1RMと比較
+            let previousBestRM = appData.personalBests[exercise] || 0;
+            let isPRUpdate = false;
+
+            if (previousBestRM === 0 || currentSessionMaxRM > previousBestRM) {
+                isPRUpdate = true;
+                appData.personalBests[exercise] = currentSessionMaxRM;
+                
+                // 🥳 過去更新通知ポップアップ ＆ 紙吹雪を即時起動！
+                setTimeout(() => {
+                    triggerConfetti();
+                    const diff = previousBestRM === 0 ? currentSessionMaxRM : (currentSessionMaxRM - previousBestRM);
+                    alert(`🎉 【自己ベスト更新!!】 🎉\n\n${exercise}の推定1RMが過去記録を【 +${diff}kg 】更新して、現在【 ${currentSessionMaxRM}kg 】に到達しました！\n素晴らしい成長です！🔥`);
+                }, 300);
             }
 
-            localStorage.setItem('trainwise_v6_final', JSON.stringify(appData));
-            currentSetCount = 5;
-            renderSetInputs();
-            renderCalendar();
-            switchTab('dash');
+            const todayStr = new Date().toISOString().split('T')[0];
+            appData.logs.push({
+                id: Date.now(),
+                date: todayStr,
+                part: currentCategory,
+                exercise: exercise,
+                sets: setsData,
+                isPRUpdate: isPRUpdate // カレンダーマーク連動用
+            });
+
+            localStorage.setItem('trainwise_v7_data', JSON.stringify(appData));
+            currentSetCount = 5; renderSetInputs(); renderCalendar(); switchTab('dash');
         }
 
-        // 過去ログリストの描画（修正・削除機能付き）
         function renderLogList() {
-            const container = document.getElementById('log-list-container');
-            container.innerHTML = '';
-            
-            const sortedLogs = [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date));
-            
-            if(sortedLogs.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">記録されたログがありません。</p>`;
-                return;
-            }
-
-            sortedLogs.forEach(log => {
-                let setSummary = log.sets.map((s, idx) => `${idx+1}枠:${s.w}kg×${s.r}`).join(' | ');
-                let indexInMainData = appData.logs.findIndex(l => l.id === log.id);
-
+            const container = document.getElementById('log-list-container'); container.innerHTML = '';
+            const sorted = [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date));
+            if(sorted.length === 0) { container.innerHTML = `<p class="text-xs text-gray-600 text-center py-2">ログなし</p>`; return; }
+            sorted.forEach(log => {
+                let summary = log.sets.map(s => `${s.w}k×${s.r}`).join('|');
                 container.innerHTML += `
-                    <div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs">
-                        <div class="space-y-1 flex-1 pr-2">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-mono text-gray-500 font-bold">${log.date}</span>
-                                <span class="px-1.5 py-0.5 rounded bg-gray-900 text-[#0aadc7] text-[10px] font-black">${log.part}</span>
-                                <span class="font-bold text-white">${log.exercise}</span>
-                            </div>
-                            <div class="text-[10px] text-gray-400 font-mono truncate">${setSummary}</div>
+                    <div class="bg-black/40 p-2.5 rounded-xl border border-gray-900 flex justify-between items-center text-xs">
+                        <div class="truncate flex-1 pr-2">
+                            <span class="font-mono text-gray-500 mr-2">${log.date.substring(5)}</span>
+                            <span class="text-[#0aadc7] font-bold mr-1">[${log.part}]</span>
+                            <span class="text-white font-bold">${log.exercise}</span>
+                            <p class="text-[10px] text-gray-400 font-mono truncate mt-0.5">${summary}</p>
                         </div>
-                        <div class="flex space-x-1">
-                            <button onclick="startEditLog(${indexInMainData})" class="px-2 py-1 rounded bg-blue-950 text-blue-400 text-[10px] font-bold">修正</button>
-                            <button onclick="deleteLog(${indexInMainData})" class="px-2 py-1 rounded bg-red-950 text-red-400 text-[10px] font-bold">削除</button>
-                        </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
-        function startEditLog(index) {
-            const log = appData.logs[index];
-            activeEditIndex = index;
-            
-            switchTab('log');
-            selectCategory(log.part);
-            document.getElementById('log-exercise').value = log.exercise;
-            
-            currentSetCount = Math.max(5, log.sets.length);
-            renderSetInputs();
-
-            log.sets.forEach((set, i) => {
-                document.getElementById(`weight-${i+1}`).value = set.w;
-                document.getElementById(`rep-${i+1}`).value = set.r;
-            });
-
-            document.getElementById('btn-save-workout').innerText = "上記の修正内容で確定保存する";
-        }
-
-        function deleteLog(index) {
-            if(!confirm('このセッションデータを本当に削除しますか？')) return;
-            appData.logs.splice(index, 1);
-            localStorage.setItem('trainwise_v6_final', JSON.stringify(appData));
-            renderLogList();
-            renderCalendar();
-            updateCharts(currentFilterPart);
-        }
-
-        // 6. グラフ（フィルター・期間切り替え完全連動機能）
+        // グラフ描画制御
         let vChart, rChart;
-        function initCharts() {
-            let vCtx = document.getElementById('volumeChart').getContext('2d');
-            vChart = new Chart(vCtx, {
-                type: 'bar',
-                data: { labels: [], datasets: [{ data: [], backgroundColor: '#00ffff', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#111' }, ticks: { color: '#444' } }, x: { ticks: { color: '#888' } } } }
-            });
+        const baseOptions = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { grid: { color: '#111' } }, x: { grid: { display: false } } }
+        };
 
-            let rCtx = document.getElementById('rmChart').getContext('2d');
-            rChart = new Chart(rCtx, {
-                type: 'line',
-                data: { labels: [], datasets: [{ data: [], borderColor: '#ff007f', tension: 0.2, fill: false }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#111' }, ticks: { color: '#444' } }, x: { ticks: { color: '#888' } } } }
-            });
+        function initCharts() {
+            vChart = new Chart(document.getElementById('volumeChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: '#00ffff', borderRadius: 4 }] }, options: baseOptions });
+            rChart = new Chart(document.getElementById('rmChart').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#ff007f', tension: 0.2 }] }, options: baseOptions });
             updateCharts('ALL');
         }
 
-        function updatePeriod(period) {
-            currentFilterPeriod = period;
-            ['ALL', '6M', '3M', '1M'].forEach(p => {
-                document.getElementById(`f-per-${p}`).className = p === period ? "px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400";
-            });
+        function updatePeriod(p) {
+            currentFilterPeriod = p;
+            ['ALL', '6M', '3M', '1M'].forEach(per => document.getElementById(`f-per-${per}`).className = per === p ? "px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400");
             updateCharts(currentFilterPart);
         }
 
         function updateCharts(part) {
             currentFilterPart = part;
             Object.keys(exerciseMaster).concat(['ALL']).forEach(p => {
-                const btn = document.getElementById(`f-part-${p}`);
-                if(btn) btn.className = p === part ? "px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400";
+                const btn = document.getElementById(`f-part-${p}`); if(btn) btn.className = p === part ? "px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400";
             });
 
-            // 期間フィルタリング用日付計算
-            const now = new Date();
-            let limitDate = new Date(0); // ALL
-            if (currentFilterPeriod === '1M') limitDate = new Date(now.setMonth(now.getMonth() - 1));
-            else if (currentFilterPeriod === '3M') limitDate = new Date(now.setMonth(now.getMonth() - 3));
-            else if (currentFilterPeriod === '6M') limitDate = new Date(now.setMonth(now.getMonth() - 6));
+            const now = new Date(); let limit = new Date(0);
+            if (currentFilterPeriod === '1M') limit = new Date(now.setMonth(now.getMonth() - 1));
+            else if (currentFilterPeriod === '3M') limit = new Date(now.setMonth(now.getMonth() - 3));
+            else if (currentFilterPeriod === '6M') limit = new Date(now.setMonth(now.getMonth() - 6));
 
-            // フィルタデータの抽出
-            let filteredLogs = appData.logs.filter(l => new Date(l.date) >= limitDate).sort((a,b) => new Date(a.date) - new Date(b.date));
-            if (part !== 'ALL') filteredLogs = filteredLogs.filter(l => l.part === part);
+            let filtered = appData.logs.filter(l => new Date(l.date) >= limit).sort((a,b) => new Date(a.date) - new Date(b.date));
+            if (part !== 'ALL') filtered = filtered.filter(l => l.part === part);
 
-            // ボリューム集計
-            let volumeMap = {};
-            let rmLabels = [];
-            let rmValues = [];
-
-            filteredLogs.forEach(log => {
-                let logVol = log.sets.reduce((acc, s) => acc + (s.w * s.r), 0);
-                volumeMap[log.date] = (volumeMap[log.date] || 0) + logVol;
-
-                // 1RM算出（各日のMAX重量セットをベースに換算）
+            let volMap = {}; let rmLabels = []; let rmValues = [];
+            filtered.forEach(log => {
+                let v = log.sets.reduce((acc, s) => acc + (s.w * s.r), 0);
+                volMap[log.date] = (volMap[log.date] || 0) + v;
                 let maxRM = Math.max(...log.sets.map(s => s.w * (1 + s.r / 40)));
-                rmLabels.push(log.date.substring(5)); // 月-日表記
-                rmValues.push(Math.round(maxRM));
+                rmLabels.push(log.date.substring(5)); rmValues.push(Math.round(maxRM));
             });
 
-            // グラフ1（ボリューム）のデータ反映
-            vChart.data.labels = Object.keys(volumeMap).map(d => d.substring(5));
-            vChart.data.datasets[0].data = Object.values(volumeMap);
-            vChart.data.datasets[0].backgroundColor = part === '胸' ? '#ff007f' : (part === '脚' ? '#00ffff' : '#bd00ff');
-            vChart.update();
-
-            // グラフ2（1RM）のデータ反映
-            rChart.data.labels = rmLabels;
-            rChart.data.datasets[0].data = rmValues;
-            rChart.data.datasets[0].borderColor = part === '胸' ? '#ff007f' : '#00ffff';
-            rChart.update();
-
-            document.getElementById('vol-graph-title').innerText = `${part} VOLUME TREND (${currentFilterPeriod})`;
-            document.getElementById('rm-graph-title').innerText = `${part} 1RM TREND (${currentFilterPeriod})`;
+            vChart.data.labels = Object.keys(volMap).map(d => d.substring(5)); vChart.data.datasets[0].data = Object.values(volumeMap = volMap); vChart.update();
+            rChart.data.labels = rmLabels; rChart.data.datasets[0].data = rmValues; rChart.update();
         }
 
-        // AIチャット（相談機能モック）
-        function sendMessage() {
+        // ================= 🧠 本物のGemini APIにリアルタイムに接続するロジック =================
+        function saveApiKey() {
+            const key = document.getElementById('gemini-key-input').value.trim();
+            if(!key) return alert('キーを入力してください');
+            localStorage.setItem('gemini_api_key', key);
+            document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了（エージェント稼働中）</p>`;
+        }
+
+        async function sendMessage() {
             const input = document.getElementById('chat-input'); const box = document.getElementById('chat-box');
-            if (!input.value.trim()) return;
-            box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl rounded-tr-none max-w-[88%] ml-auto text-right text-white font-medium">${input.value}</div>`;
+            const userText = input.value.trim(); if (!userText) return;
+
+            // ユーザーの発言を画面に出す
+            box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl rounded-tr-none max-w-[88%] ml-auto text-right text-white font-medium">${userText}</div>`;
             input.value = ''; box.scrollTop = box.scrollHeight;
-            setTimeout(() => {
-                box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>修正された直近のデータを含め、7部位の現在の週当たりボリュームバランスを解析しました。次回セッションのアドバイスを組み立てます。</div>`;
-                box.scrollTop = box.scrollHeight;
-            }, 800);
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if(!apiKey) {
+                // キーがない場合は、これまでのダミー返信を出す
+                setTimeout(() => {
+                    box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>【案内】チャットを本物にするには、上のパネルから無料のGemini APIキーを取得してセットしてください！</div>`;
+                    box.scrollTop = box.scrollHeight;
+                }, 800);
+                return;
+            }
+
+            // ローディング表示
+            const loadingId = 'loading-' + Date.now();
+            box.innerHTML += `<div id="${loadingId}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                // 🚀 ここでGoogle公式のGemini AIエンドポイントに直接データを送信！
+                // あなたのこれまでの全筋トレログデータを丸ごと文章にして裏側からGeminiにコンテキストとして渡します。
+                const statsSummary = JSON.stringify(appData.logs);
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `あなたは筋トレ専用AIトレーナー「TRAINWISE AI」のエージェントです。ユーザーの直近の全トレーニングデータはこちらです: ${statsSummary}。このデータをもとに、ユーザーの質問「${userText}」に対して、親身かつ専門的でモチベーションの上がるアドバイスを簡潔に返答してください。日本語で回答してください。` }] }]
+                    })
+                });
+
+                const data = await response.json();
+                document.getElementById(loadingId).remove();
+
+                const aiReply = data.candidates[0].content.parts[0].text;
+                box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${aiReply.replace(/\n/g, '<br>')}</div>`;
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                box.innerHTML += `<div class="text-red-500 p-2">エラーが発生しました。APIキーが正しいか確認してください。</div>`;
+            }
+            box.scrollTop = box.scrollHeight;
         }
 
-        // 起動処理
         window.onload = () => {
-            renderCalendar();
-            selectCategory('胸');
-            renderSetInputs();
-            renderCategorySelector();
-            initCharts();
-            renderLogList();
+            renderCalendar(); selectCategory('胸'); renderSetInputs(); renderCategorySelector(); initCharts(); renderLogList();
+            if(localStorage.getItem('gemini_api_key')) {
+                document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了（エージェント稼働中）</p>`;
+            }
         };
     </script>
 </body>
