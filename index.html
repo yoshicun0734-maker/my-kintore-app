@@ -56,14 +56,15 @@
         </section>
 
         <div id="content-dash" class="space-y-6">
+            
             <div class="space-y-3 bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900">
                 <div class="flex flex-col space-y-2">
                     <span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">部位フィルター:</span>
                     <div class="flex flex-wrap gap-1" id="part-filters">
                         <button onclick="updateCharts('ALL')" id="f-part-ALL" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black">ALL</button>
                         <button onclick="updateCharts('胸')" id="f-part-胸" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">胸</button>
-                        <button onclick="updateCharts('脚')" id="f-part-脚" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">脚</button>
                         <button onclick="updateCharts('背中')" id="f-part-背中" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">背中</button>
+                        <button onclick="updateCharts('脚')" id="f-part-脚" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">脚</button>
                         <button onclick="updateCharts('腕')" id="f-part-腕" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">腕</button>
                         <button onclick="updateCharts('肩')" id="f-part-肩" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">肩</button>
                         <button onclick="updateCharts('お尻')" id="f-part-お尻" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">お尻</button>
@@ -92,13 +93,14 @@
             </div>
 
             <div class="card-dark p-5 rounded-2xl">
-                <h3 class="text-xs font-bold text-gray-400 tracking-wide uppercase mb-3">📋 過去のトレーニングログ</h3>
+                <h3 class="text-xs font-bold text-gray-400 tracking-wide uppercase mb-3">📋 過去のトレーニングログ（修正・削除）</h3>
                 <div id="log-list-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
             </div>
         </div>
 
         <div id="content-log" class="hidden space-y-6">
             <div class="card-dark p-5 rounded-2xl space-y-5">
+                
                 <div>
                     <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. 対象部位</label>
                     <div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div>
@@ -122,11 +124,11 @@
 
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider">
-                        <div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div>
+                        <div>セット</div><div>重量 (kg)</div><div>回数 (レップ数)</div>
                     </div>
                     <div id="set-inputs-container" class="space-y-2"></div>
                     <button onclick="addNewSetRow()" class="w-full py-2 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">
-                        ＋ セットを追加
+                        ＋ セットを追加 (第6セット以降)
                     </button>
                 </div>
 
@@ -148,7 +150,7 @@
             <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2">
                 <div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl rounded-tl-none max-w-[88%]">
                     <span class="font-black text-[#0aadc7] block mb-1">AI Coach Agent</span>
-                    こんにちは！APIキーを設定すると、現在のあなたの全データ（グラフや過去ログ）を私がリアルタイムに分析して、今と同じようにアドバイスを返せるようになります！
+                    こんにちは！APIキーを設定すると、現在のあなたの全データを私がリアルタイムに分析してアドバイスを返せるようになります！
                 </div>
             </div>
             <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900">
@@ -171,25 +173,27 @@
     </nav>
 
     <script>
+        // 7部位マスターデータの完全拡張
         const exerciseMaster = {
-            '胸': ['ベンチプレス', 'インクラインダンベルプレス', 'チェストフライ'],
-            '背中': ['デッドリフト', 'ラットプルダウン', 'ベントオーバーロウ'],
-            '脚': ['スクワット', 'レッグプレス', 'ブルガリアンスクワット'],
-            '腕': ['バーベルカール', 'ライイングトリセプス'],
-            '肩': ['ショルダープレス', 'サイドレイズ'],
-            'お尻': ['ヒップスラスト'],
-            '腹筋': ['アブローラー', 'レッグレイズ']
+            '胸': ['ベンチプレス', 'インクラインダンベルプレス', 'チェストフライ', 'ディップス'],
+            '背中': ['デッドリフト', 'ラットプルダウン', 'ベントオーバーロウ', '懸垂'],
+            '脚': ['スクワット', 'レッグプレス', 'ブルガリアンスクワット', 'レッグエクステンション'],
+            '腕': ['バーベルカール', 'ライイングトリセプスエクステンション', 'ハンマーカール'],
+            '肩': ['ショルダープレス', 'サイドレイズ', 'リアレイズ'],
+            'お尻': ['ヒップスラスト', 'バックエクステンション'],
+            '腹筋': ['アブローラー', 'レッチレイズ', 'クランチ']
         };
 
         let currentCategory = '胸';
         let currentFilterPart = 'ALL';
         let currentFilterPeriod = 'ALL';
-        let activeEditIndex = null;
+        let activeEditId = null; // IDベースで完全に追跡
         let calendarYear = 2026;
         let calendarMonth = 4; 
         let currentSetCount = 5;
 
-        let appData = JSON.parse(localStorage.getItem('trainwise_v7_data')) || { logs: [], personalBests: {} };
+        // 新しいデータベースキーでクリーン初期化
+        let appData = JSON.parse(localStorage.getItem('trainwise_v8_clean')) || { logs: [], personalBests: {} };
 
         function switchTab(tab) {
             ['dash', 'log', 'chat'].forEach(t => {
@@ -201,7 +205,7 @@
             if(tab === 'dash') { renderLogList(); updateCharts(currentFilterPart); }
         }
 
-        // 🗓️ カレンダー＆月間日数カウントロジック
+        // 🗓️ カレンダー＆月間日数カウント
         function renderCalendar() {
             const grid = document.getElementById('calendar-days-grid');
             grid.innerHTML = '';
@@ -216,12 +220,8 @@
 
             for (let day = 1; day <= totalDays; day++) {
                 const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                // その日のログを抽出
                 const daysLogs = appData.logs.filter(l => l.date === dateStr);
                 const hasWorkout = daysLogs.length > 0;
-                
-                // 期間中に1RM更新（過去最高）があったかチェックするフラグ
                 const hasPrUpdate = daysLogs.some(l => l.isPRUpdate);
 
                 if(hasWorkout) uniqueWorkoutDaysInMonth.add(day);
@@ -229,20 +229,16 @@
                 let cellClass = "p-1.5 rounded-lg flex flex-col items-center justify-center text-gray-600 font-mono";
                 if (hasWorkout) cellClass = "p-1.5 rounded-lg text-white font-bold bg-gray-900/40";
 
-                // 🔥 RM更新時はカレンダーの丸ポチをネオンピンク（#ff007f）にして差別化！
                 let dotColor = 'text-transparent';
-                if (hasPrUpdate) dotColor = 'text-[#ff007f] text-[10px]';
+                if (hasPrUpdate) dotColor = 'text-[#ff007f] text-[10px] font-black';
                 else if (hasWorkout) dotColor = 'text-[#0aadc7]';
 
                 grid.innerHTML += `
                     <div class="${cellClass}">
                         <span>${day}</span>
                         <span class="text-[8px] mt-0.5 ${dotColor}">${hasPrUpdate ? '★' : '●'}</span>
-                    </div>
-                `;
+                    </div>`;
             }
-
-            // 月間合計日数を画面に反映
             document.getElementById('monthly-count-badge').innerText = `${uniqueWorkoutDaysInMonth.size} 日`;
         }
 
@@ -253,6 +249,7 @@
             renderCalendar();
         }
 
+        // 7部位の選択ボタン生成
         function renderCategorySelector() {
             const container = document.getElementById('category-selector-grid'); container.innerHTML = '';
             Object.keys(exerciseMaster).forEach(cat => {
@@ -267,14 +264,15 @@
             updatePreviousStats();
         }
 
+        // セット入力フォーム生成（5セット標準、数値入力）
         function renderSetInputs() {
             const container = document.getElementById('set-inputs-container'); container.innerHTML = '';
             for (let i = 1; i <= currentSetCount; i++) {
                 container.innerHTML += `
                     <div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900">
                         <div class="text-xs font-black text-gray-500 pl-2">SET ${i}</div>
-                        <input type="number" id="weight-${i}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none">
-                        <input type="number" id="rep-${i}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none">
+                        <input type="number" id="weight-${i}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none focus:border-[#0aadc7]">
+                        <input type="number" id="rep-${i}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none focus:border-[#0aadc7]">
                     </div>`;
             }
         }
@@ -284,27 +282,25 @@
         function updatePreviousStats() {
             const ex = document.getElementById('log-exercise').value;
             const filtered = appData.logs.filter(l => l.exercise === ex).sort((a,b) => new Date(b.date) - new Date(a.date));
-            document.getElementById('stat-prev').innerText = filtered[0] ? `${filtered[0].sets[0].w}kg / ${filtered[0].sets[0].r}r` : 'なし';
-            document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg / ${filtered[1].sets[0].r}r` : 'なし';
+            document.getElementById('stat-prev').innerText = filtered[0] ? `${filtered[0].sets[0].w}kg / ${filtered[0].sets[0].r}r` : 'データなし';
+            document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg / ${filtered[1].sets[0].r}r` : 'データなし';
         }
 
-        // 🥳 画面にド派手な紙吹雪を撒き散らす演出ロジック
+        // 🥳 紙吹雪アニメーション
         function triggerConfetti() {
             const colors = ['#0aadc7', '#ff007f', '#bd00ff', '#39ff14', '#ffee00'];
-            for (let i = 0; i < 100; i++) {
-                const div = document.createElement('div');
-                div.className = 'confetti';
+            for (let i = 0; i < 80; i++) {
+                const div = document.createElement('div'); div.className = 'confetti';
                 div.style.left = Math.random() * 100 + 'vw';
                 div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                div.style.transform = `scale(${Math.random() * 1.5 + 0.5})`;
+                div.style.transform = `scale(${Math.random() * 1.2 + 0.5})`;
                 div.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                div.style.animationDelay = Math.random() * 0.4 + 's';
                 document.body.appendChild(div);
                 setTimeout(() => div.remove(), 3500);
             }
         }
 
-        // セッション保存と1RM更新チェック
+        // 💾 保存 & 修正の統合エンジン
         function saveLog() {
             const exercise = document.getElementById('log-exercise').value;
             let setsData = [];
@@ -313,71 +309,122 @@
                 let r = parseInt(document.getElementById(`rep-${i}`).value);
                 if (w && r) setsData.push({ w: w, r: r });
             }
-            if (setsData.length === 0) return alert('入力してください');
+            if (setsData.length === 0) return alert('重量とレップ数を正しく入力してください。');
 
-            // 今回のセッションでの最高推定1RMを計算
-            let currentSessionMaxRM = Math.max(...setsData.map(s => s.w * (1 + s.r / 40)));
-            currentSessionMaxRM = Math.round(currentSessionMaxRM);
-
-            // 過去のその種目の最高1RMと比較
+            let currentSessionMaxRM = Math.round(Math.max(...setsData.map(s => s.w * (1 + s.r / 40))));
             let previousBestRM = appData.personalBests[exercise] || 0;
             let isPRUpdate = false;
 
             if (previousBestRM === 0 || currentSessionMaxRM > previousBestRM) {
                 isPRUpdate = true;
                 appData.personalBests[exercise] = currentSessionMaxRM;
-                
-                // 🥳 過去更新通知ポップアップ ＆ 紙吹雪を即時起動！
                 setTimeout(() => {
                     triggerConfetti();
-                    const diff = previousBestRM === 0 ? currentSessionMaxRM : (currentSessionMaxRM - previousBestRM);
-                    alert(`🎉 【自己ベスト更新!!】 🎉\n\n${exercise}の推定1RMが過去記録を【 +${diff}kg 】更新して、現在【 ${currentSessionMaxRM}kg 】に到達しました！\n素晴らしい成長です！🔥`);
+                    let diff = previousBestRM === 0 ? currentSessionMaxRM : (currentSessionMaxRM - previousBestRM);
+                    alert(`🎉 【自己ベスト更新!!】 🎉\n\n${exercise}の推定1RMが過去の記録を【 +${diff}kg 】更新し、【 ${currentSessionMaxRM}kg 】に到達しました！🔥`);
                 }, 300);
             }
 
-            const todayStr = new Date().toISOString().split('T')[0];
-            appData.logs.push({
-                id: Date.now(),
-                date: todayStr,
-                part: currentCategory,
-                exercise: exercise,
-                sets: setsData,
-                isPRUpdate: isPRUpdate // カレンダーマーク連動用
-            });
+            if (activeEditId !== null) {
+                // 修正モード
+                let idx = appData.logs.findIndex(l => l.id === activeEditId);
+                if(idx !== -1) {
+                    appData.logs[idx].sets = setsData;
+                    appData.logs[idx].exercise = exercise;
+                    appData.logs[idx].part = currentCategory;
+                    appData.logs[idx].isPRUpdate = isPRUpdate;
+                }
+                activeEditId = null;
+                document.getElementById('btn-save-workout').innerText = "RECORD WORKOUT SESSION";
+                alert('トレーニング記録を修正しました！');
+            } else {
+                // 新規モード
+                const todayStr = new Date().toISOString().split('T')[0];
+                appData.logs.push({
+                    id: Date.now(),
+                    date: todayStr,
+                    part: currentCategory,
+                    exercise: exercise,
+                    sets: setsData,
+                    isPRUpdate: isPRUpdate
+                });
+                alert('トレーニング記録を保存しました！');
+            }
 
-            localStorage.setItem('trainwise_v7_data', JSON.stringify(appData));
+            localStorage.setItem('trainwise_v8_clean', JSON.stringify(appData));
             currentSetCount = 5; renderSetInputs(); renderCalendar(); switchTab('dash');
         }
 
+        // 過去ログ一覧の描画（修正・削除が完全に機能します）
         function renderLogList() {
             const container = document.getElementById('log-list-container'); container.innerHTML = '';
             const sorted = [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(sorted.length === 0) { container.innerHTML = `<p class="text-xs text-gray-600 text-center py-2">ログなし</p>`; return; }
+            
+            if(sorted.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">ログがありません。</p>`;
+                return;
+            }
+
             sorted.forEach(log => {
-                let summary = log.sets.map(s => `${s.w}k×${s.r}`).join('|');
+                let summary = log.sets.map((s, idx) => `${idx+1}枠:${s.w}k×${s.r}`).join(' | ');
                 container.innerHTML += `
-                    <div class="bg-black/40 p-2.5 rounded-xl border border-gray-900 flex justify-between items-center text-xs">
+                    <div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs">
                         <div class="truncate flex-1 pr-2">
-                            <span class="font-mono text-gray-500 mr-2">${log.date.substring(5)}</span>
-                            <span class="text-[#0aadc7] font-bold mr-1">[${log.part}]</span>
-                            <span class="text-white font-bold">${log.exercise}</span>
-                            <p class="text-[10px] text-gray-400 font-mono truncate mt-0.5">${summary}</p>
+                            <div class="flex items-center space-x-1.5 mb-0.5">
+                                <span class="font-mono text-gray-500 font-bold">${log.date.substring(5)}</span>
+                                <span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black">${log.part}</span>
+                                <span class="text-white font-bold truncate">${log.exercise}</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 font-mono truncate">${summary}</p>
+                        </div>
+                        <div class="flex space-x-1 shrink-0">
+                            <button onclick="startEditLog(${log.id})" class="px-2 py-1 rounded bg-blue-950 text-blue-400 text-[10px] font-bold">修正</button>
+                            <button onclick="deleteLog(${log.id})" class="px-2 py-1 rounded bg-red-950 text-red-400 text-[10px] font-bold">削除</button>
                         </div>
                     </div>`;
             });
         }
 
-        // グラフ描画制御
+        function startEditLog(id) {
+            const log = appData.logs.find(l => l.id === id);
+            if(!log) return;
+            activeEditId = id;
+            
+            switchTab('log');
+            selectCategory(log.part);
+            document.getElementById('log-exercise').value = log.exercise;
+            
+            currentSetCount = Math.max(5, log.sets.length);
+            renderSetInputs();
+
+            log.sets.forEach((set, i) => {
+                if(document.getElementById(`weight-${i+1}`)) document.getElementById(`weight-${i+1}`).value = set.w;
+                if(document.getElementById(`rep-${i+1}`)) document.getElementById(`rep-${i+1}`).value = set.r;
+            });
+            document.getElementById('btn-save-workout').innerText = "上記の修正内容で確定保存する";
+        }
+
+        function deleteLog(id) {
+            if(!confirm('このログデータを完全に削除しますか？')) return;
+            appData.logs = appData.logs.filter(l => l.id !== id);
+            localStorage.setItem('trainwise_v8_clean', JSON.stringify(appData));
+            renderLogList(); renderCalendar(); updateCharts(currentFilterPart);
+        }
+
+        // 📊 グラフ（部位別・期間の完全連動フィルター）
         let vChart, rChart;
         const baseOptions = {
             responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: { y: { grid: { color: '#111' } }, x: { grid: { display: false } } }
+            scales: {
+                y: { grid: { color: '#111' }, ticks: { color: '#444', font: { size: 9 } } },
+                x: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } }
+            }
         };
 
         function initCharts() {
             vChart = new Chart(document.getElementById('volumeChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: '#00ffff', borderRadius: 4 }] }, options: baseOptions });
-            rChart = new Chart(document.getElementById('rmChart').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#ff007f', tension: 0.2 }] }, options: baseOptions });
+            rChart = new Chart(document.getElementById('rmChart').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#ff007f', tension: 0.2, fill: false }] }, options: baseOptions });
             updateCharts('ALL');
         }
 
@@ -409,15 +456,18 @@
                 rmLabels.push(log.date.substring(5)); rmValues.push(Math.round(maxRM));
             });
 
-            vChart.data.labels = Object.keys(volMap).map(d => d.substring(5)); vChart.data.datasets[0].data = Object.values(volumeMap = volMap); vChart.update();
+            vChart.data.labels = Object.keys(volMap).map(d => d.substring(5)); vChart.data.datasets[0].data = Object.values(volMap); vChart.update();
             rChart.data.labels = rmLabels; rChart.data.datasets[0].data = rmValues; rChart.update();
+
+            document.getElementById('vol-graph-title').innerText = `${part} VOLUME TREND (${currentFilterPeriod})`;
+            document.getElementById('rm-graph-title').innerText = `${part} 1RM TREND (${currentFilterPeriod})`;
         }
 
-        // ================= 🧠 本物のGemini APIにリアルタイムに接続するロジック =================
+        // ================= 🧠 Gemini リアルタイム接続 =================
         function saveApiKey() {
             const key = document.getElementById('gemini-key-input').value.trim();
             if(!key) return alert('キーを入力してください');
-            localStorage.setItem('gemini_api_key', key);
+            localStorage.setItem('gemini_api_key_v8', key);
             document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了（エージェント稼働中）</p>`;
         }
 
@@ -425,28 +475,23 @@
             const input = document.getElementById('chat-input'); const box = document.getElementById('chat-box');
             const userText = input.value.trim(); if (!userText) return;
 
-            // ユーザーの発言を画面に出す
             box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl rounded-tr-none max-w-[88%] ml-auto text-right text-white font-medium">${userText}</div>`;
             input.value = ''; box.scrollTop = box.scrollHeight;
 
-            const apiKey = localStorage.getItem('gemini_api_key');
+            const apiKey = localStorage.getItem('gemini_api_key_v8');
             if(!apiKey) {
-                // キーがない場合は、これまでのダミー返信を出す
                 setTimeout(() => {
-                    box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>【案内】チャットを本物にするには、上のパネルから無料のGemini APIキーを取得してセットしてください！</div>`;
+                    box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-xs"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>【キーが未設定です】チャットを本物にするには、上のパネルから無料のGemini APIキーをセットしてください！</div>`;
                     box.scrollTop = box.scrollHeight;
                 }, 800);
                 return;
             }
 
-            // ローディング表示
             const loadingId = 'loading-' + Date.now();
             box.innerHTML += `<div id="${loadingId}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`;
             box.scrollTop = box.scrollHeight;
 
             try {
-                // 🚀 ここでGoogle公式のGemini AIエンドポイントに直接データを送信！
-                // あなたのこれまでの全筋トレログデータを丸ごと文章にして裏側からGeminiにコンテキストとして渡します。
                 const statsSummary = JSON.stringify(appData.logs);
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
@@ -458,19 +503,18 @@
 
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
-
                 const aiReply = data.candidates[0].content.parts[0].text;
                 box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl rounded-tl-none max-w-[88%] text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${aiReply.replace(/\n/g, '<br>')}</div>`;
             } catch (err) {
-                document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="text-red-500 p-2">エラーが発生しました。APIキーが正しいか確認してください。</div>`;
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                box.innerHTML += `<div class="text-red-500 p-2">エラーが発生しました。APIキーを確認してください。</div>`;
             }
             box.scrollTop = box.scrollHeight;
         }
 
         window.onload = () => {
             renderCalendar(); selectCategory('胸'); renderSetInputs(); renderCategorySelector(); initCharts(); renderLogList();
-            if(localStorage.getItem('gemini_api_key')) {
+            if(localStorage.getItem('gemini_api_key_v8')) {
                 document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了（エージェント稼働中）</p>`;
             }
         };
