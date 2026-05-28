@@ -7,27 +7,23 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #000; color: #fff; font-family: system-ui, -apple-system, sans-serif; }
-        .card-dark { background-color: #0c0f17; border: 1px solid #1a202c; }
-        .active-tab { color: #0aadc7; font-weight: 900; }
-        * { -webkit-tap-highlight-color: transparent; }
-        .scroll-container { overflow-y: auto; height: calc(100vh - 140px); padding-bottom: 60px; }
-        .confetti { position: fixed; width: 8px; height: 8px; z-index: 999; animation: fall linear forwards; }
-        @keyframes fall { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        body{background:#000;color:#fff;font-family:sans-serif;}
+        .card-dark{background:#0c0f17;border:1px solid #1a202c;}
+        .active-tab{color:#0aadc7;font-weight:900;}
+        *{ -webkit-tap-highlight-color:transparent;}
+        .scroll-container{overflow-y:auto;height:calc(100vh - 140px);padding-bottom:60px;}
+        .confetti{position:fixed;width:8px;height:8px;z-index:999;animation:fall linear forwards;}
+        @keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col justify-between relative bg-black select-none">
-
+<body class="max-w-md mx-auto min-h-screen flex flex-col justify-between bg-black select-none">
     <header class="fixed top-0 left-0 right-0 max-w-md mx-auto bg-black/90 backdrop-blur-md z-50 px-5 pt-4 pb-3 flex justify-between items-center border-b border-gray-900/60">
         <div>
             <h1 class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#0aadc7] to-[#81e6d9]">TRAINWISE AI</h1>
             <p class="text-[9px] text-gray-500 font-mono mt-0.5">PREMIUM WORKOUT ARCHITECT</p>
         </div>
-        <button onclick="switchTab('chat')" class="w-10 h-10 rounded-full border border-[#0aadc7]/40 bg-gradient-to-tr from-[#0c0f17] to-[#121c2c] flex items-center justify-center shadow-lg active:scale-90 transition-all">
-            <span class="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0aadc7] to-[#bd00ff]">✦</span>
-        </button>
+        <button onclick="switchTab('chat')" class="w-10 h-10 rounded-full border border-[#0aadc7]/40 bg-gradient-to-tr from-[#0c0f17] to-[#121c2c] flex items-center justify-center shadow-lg active:scale-90 transition-all"><span class="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0aadc7] to-[#bd00ff]">✦</span></button>
     </header>
-
     <main class="flex-1 mt-[72px] px-5 scroll-container">
         <section class="mb-6 pt-2 bg-[#0c0f17]/40 p-4 rounded-2xl border border-gray-900">
             <div class="flex justify-between items-center mb-3 px-1">
@@ -35,295 +31,223 @@
                 <span id="calendar-month-title" class="text-xs font-bold font-mono tracking-wider"></span>
                 <button onclick="changeMonth(1)" class="text-[#0aadc7] font-black p-1">▶</button>
             </div>
-            <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-gray-600 uppercase mb-1">
-                <div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div>
-            </div>
+            <div class="grid grid-cols-7 gap-1 text-center text-[9px] font-bold text-gray-600 uppercase mb-1"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
             <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 text-center font-mono text-xs mb-3"></div>
             <div id="selected-day-log-box" class="border-t border-gray-900/80 pt-3 mt-2 hidden">
                 <h4 id="selected-date-title" class="text-[10px] font-black text-[#0aadc7] mb-2 font-mono tracking-wider"></h4>
                 <div id="selected-day-records" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
             </div>
-            <div class="border-t border-gray-900/60 pt-2.5 text-center mt-2">
-                <p class="text-[11px] text-gray-400 font-bold">今月の総トレーニング日数: <span id="monthly-count-badge" class="text-[#0aadc7] text-xs font-black bg-[#0aadc7]/10 px-2 py-0.5 rounded-md font-mono">0 日</span></p>
-            </div>
+            <div class="border-t border-gray-900/60 pt-2.5 text-center mt-2"><p class="text-[11px] text-gray-400 font-bold">今月の総トレーニング日数: <span id="monthly-count-badge" class="text-[#0aadc7] text-xs font-black bg-[#0aadc7]/10 px-2 py-0.5 rounded-md font-mono">0 日</span></p></div>
         </section>
-
         <div id="content-dash" class="space-y-6">
             <div class="space-y-3 bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900">
-                <div class="flex flex-col space-y-2">
-                    <span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">部位フィルター:</span>
-                    <div class="flex flex-wrap gap-1" id="part-filters">
-                        <button onclick="updateCharts('ALL')" id="f-part-ALL" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black">ALL</button>
-                        <button onclick="updateCharts('胸')" id="f-part-胸" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">胸</button>
-                        <button onclick="updateCharts('背中')" id="f-part-背中" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">背中</button>
-                        <button onclick="updateCharts('脚')" id="f-part-脚" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">脚</button>
-                        <button onclick="updateCharts('肩')" id="f-part-肩" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">肩</button>
-                        <button onclick="updateCharts('腕')" id="f-part-腕" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">腕</button>
-                        <button onclick="updateCharts('お尻')" id="f-part-お尻" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">お尻</button>
-                        <button onclick="updateCharts('腹筋')" id="f-part-腹筋" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">腹筋</button>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between border-t border-gray-900 pt-2">
-                    <span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">表示期間:</span>
-                    <div class="flex space-x-1" id="period-filters">
-                        <button onclick="updatePeriod('ALL')" id="f-per-ALL" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black">ALL</button>
-                        <button onclick="updatePeriod('6M')" id="f-per-6M" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400">6ヶ月</button>
-                        <button onclick="updatePeriod('3M')" id="f-per-3M" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400">3ヶ月</button>
-                        <button onclick="updatePeriod('1M')" id="f-per-1M" class="px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400">1ヶ月</button>
-                    </div>
-                </div>
+                <div class="flex flex-col space-y-2"><span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">部位フィルター:</span><div class="flex flex-wrap gap-1" id="part-filters"></div></div>
+                <div class="flex items-center justify-between border-t border-gray-900 pt-2"><span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">表示期間:</span><div class="flex space-x-1" id="period-filters"></div></div>
             </div>
             <div class="card-dark p-5 rounded-2xl"><h3 class="text-xs font-bold text-gray-400 uppercase mb-3" id="vol-graph-title">VOLUME TREND</h3><div class="h-44 w-full"><canvas id="volumeChart"></canvas></div></div>
             <div class="card-dark p-5 rounded-2xl"><h3 class="text-xs font-bold text-gray-400 uppercase mb-3" id="rm-graph-title">ESTIMATED 1RM TREND</h3><div class="h-44 w-full"><canvas id="rmChart"></canvas></div></div>
             <div class="card-dark p-5 rounded-2xl"><h3 class="text-xs font-bold text-gray-400 uppercase mb-3">📋 全トレーニング履歴（修正・削除）</h3><div id="log-list-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div></div>
         </div>
-
         <div id="content-log" class="hidden space-y-6">
             <div class="card-dark p-5 rounded-2xl space-y-5">
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">📅 トレーニング実施日</label>
-                    <input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#0aadc7] font-mono font-bold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">1. 対象部位</label>
-                    <div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-2 uppercase">2. ワークアウト種目</label>
-                    <select id="log-exercise" onchange="updatePreviousStats()" class="w-full bg-black border border-gray-800 rounded-xl p-3.5 text-sm text-white focus:outline-none focus:border-[#0aadc7] font-bold"></select>
-                </div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">📅 トレーニング実施日</label><input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none font-mono font-bold"></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase">1. 対象部位</label><div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase">2. ワークアウト種目</label><select id="log-exercise" onchange="updatePreviousStats()" class="w-full bg-black border border-gray-800 rounded-xl p-3.5 text-sm text-white focus:outline-none font-bold"></select></div>
                 <div class="space-y-2">
                     <div class="grid grid-cols-2 gap-3 bg-black p-3 rounded-xl border border-gray-900 text-center">
                         <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀ 前回実績</span><span id="stat-prev" class="text-xs font-mono font-bold text-[#0aadc7]">なし</span></div>
                         <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀◀ 前々回実績</span><span id="stat-prev2" class="text-xs font-mono font-bold text-gray-400">なし</span></div>
                     </div>
-                    <div class="bg-[#0c0f17] border border-dashed border-gray-900 p-2.5 rounded-xl text-left">
-                        <span class="block text-[9px] text-[#0aadc7] font-black uppercase mb-1">💡 この種目の直近のメモ</span>
-                        <p id="live-previous-memo" class="text-[11px] text-gray-300 italic">なし</p>
-                    </div>
+                    <div class="bg-[#0c0f17] border border-dashed border-gray-900 p-2.5 rounded-xl"><span class="block text-[9px] text-[#0aadc7] font-black uppercase mb-1">💡 この種目の直近のメモ</span><p id="live-previous-memo" class="text-[11px] text-gray-300 italic">なし</p></div>
                 </div>
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase"><div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div></div>
                     <div id="set-inputs-container" class="space-y-2"></div>
                     <button onclick="addNewSetRow()" class="w-full py-2 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">＋ セットを追加</button>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">📝 今回のメモ・気づき</label>
-                    <textarea id="log-memo-input" rows="2" placeholder="コンディションやフォーム意識など" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-[#0aadc7] resize-none font-medium"></textarea>
-                </div>
-                <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] hover:bg-[#099cb3] text-black font-black py-4 rounded-xl text-sm transition-all active:scale-[0.98]">RECORD WORKOUT SESSION</button>
+                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">📝 今回のメモ・気づき</label><textarea id="log-memo-input" rows="2" placeholder="コンディションやフォーム意識など" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none resize-none font-medium"></textarea></div>
+                <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] text-black font-black py-4 rounded-xl text-sm active:scale-[0.98]">RECORD WORKOUT SESSION</button>
             </div>
         </div>
-
         <div id="content-memos" class="hidden space-y-4">
-            <div class="bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900">
-                <h3 class="text-xs font-black text-gray-400 uppercase mb-3">📝 ワークアウト・メモ履歴一覧</h3>
-                <div id="memo-timeline-container" class="space-y-3 max-h-[68vh] overflow-y-auto pr-1"></div>
-            </div>
+            <div class="bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900"><h3 class="text-xs font-black text-gray-400 uppercase mb-3">📝 ワークアウト・メモ履歴一覧</h3><div id="memo-timeline-container" class="space-y-3 max-h-[68vh] overflow-y-auto pr-1"></div></div>
         </div>
-
         <div id="content-chat" class="hidden flex flex-col h-[60vh] justify-between">
-            <div id="api-key-panel" class="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl text-center text-xs space-y-2 mb-3">
-                <p class="text-amber-400 font-bold">⚠️ Geminiとの本物のチャットをONにする</p>
-                <div class="flex space-x-1">
-                    <input type="password" id="gemini-key-input" placeholder="API Keyを入力..." class="flex-1 bg-black border border-gray-800 rounded p-1.5 text-center font-mono text-white text-[11px]">
-                    <button onclick="saveApiKey()" class="bg-amber-500 text-black px-3 font-bold rounded text-[11px]">有効化</button>
-                </div>
-            </div>
-            <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2"><div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl">AI Coach Agent: データを元にリアルタイム分析します！</div></div>
-            <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900">
-                <input type="text" id="chat-input" placeholder="AIトレーナーに相談..." class="flex-1 bg-transparent px-2 text-sm text-white focus:outline-none">
-                <button onclick="sendMessage()" class="bg-[#0aadc7] text-black px-4 py-2 rounded-lg font-black text-xs active:scale-95 transition-all">ASK</button>
-            </div>
+            <div id="api-key-panel" class="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl text-center text-xs space-y-2 mb-3"><p class="text-amber-400 font-bold">⚠️ Geminiチャットを有効化</p><div class="flex space-x-1"><input type="password" id="gemini-key-input" placeholder="API Keyを入力..." class="flex-1 bg-black border border-gray-800 rounded p-1.5 text-center font-mono text-white text-[11px]"><button onclick="saveApiKey()" class="bg-amber-500 text-black px-3 font-bold rounded text-[11px]">有効化</button></div></div>
+            <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2"><div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl">AI Coach Agent: リアルタイム分析します！</div></div>
+            <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900"><input type="text" id="chat-input" placeholder="AIトレーナーに相談..." class="flex-1 bg-transparent px-2 text-sm text-white focus:outline-none"><button onclick="sendMessage()" class="bg-[#0aadc7] text-black px-4 py-2 rounded-lg font-black text-xs">ASK</button></div>
         </div>
     </main>
-
     <nav class="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-gray-950 max-w-md mx-auto flex justify-around items-center h-16 text-center z-50">
         <button onclick="switchTab('dash')" id="nav-dash" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold active-tab"><span>📊</span><span>分析</span></button>
         <button onclick="switchTab('log')" id="nav-log" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600"><span>🏋️‍♂️</span><span>記録</span></button>
         <button onclick="switchTab('memos')" id="nav-memos" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600"><span>📝</span><span>メモ</span></button>
         <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600"><span>🧠</span><span>AI相談</span></button>
     </nav>
-
     <script>
         const exerciseMaster = {
-            '背中': ['チンニング（順手・ワイドグリップ）','チンニング（順手・ナローグリップ）','チンニング（逆手・ワイドグリップ）','チンニング（逆手・ナローグリップ）','チンニング（パラレルグリップ）','インバーテッドロウ（順手）','インバーテッドロウ（逆手）','バックエクステンション（床での背筋運動）','リバースプッシュアップ（背中意識）','バーベル・デッドリフト','ダンベル・デッドリフト','バーベル・ベントオーバーロウ（順手）','バーベル・ベントオーバーロウ（逆手）','ダンベル・ベントオーバーロウ','ワンハンド・ダンベルロウ','ダンベル・プルオーバー','バーベル・Tバーロウ','ラットプルダウン（フロント・ワイドグリップ）','ラットプルダウン（フロント・ナローグリップ）','ラットプルダウン（ビハインドネック：首の後ろ）','ラットプルダウン（パラレルグリップ）','シーテッド・ケーブルロウ（ワイドグリップ）','シーテッド・ケーブルロウ（ナロー・パラレルグリップ）','シーテッド・マシンロウ','アシスト・チンニング（マシン補助付き懸垂）','バックエクステンション（ベンチ/ローマンチェア使用）','ストレートアーム・ケーブルプルダウン'],
-            '胸': ['ノーマル・プッシュアップ（通常の腕立て伏せ）','ワイド・プッシュアップ（手幅を広く）','ナロー・プッシュアップ（手幅を狭く）','インクライン・プッシュアップ（手を台に乗せる・大胸筋下部狙い）','デクライン・プッシュアップ（足を台に乗せる・大胸筋上部狙い）','ディップス（大胸筋下部狙い）','フラット・バーベルベンチプレス','インクライン・バーベルベンチプレス','デクライン・バーベルベンチプレス','フラット・ダンベルプレス','インクライン・ダンベルプレス','デクライン・ダンベルプレス','フラット・ダンベルフライ','インクライン・ダンベルフライ','デクライン・ダンベルフライ','ダンベル・フロアプレス（床で行うプレス）','チェストプレス・マシン（フラット）','インクライン・チェストプレス・マシン','デクライン・チェストプレス・マシン','ペックフライ・マシン（バタフライマシン）','ケーブル・クロスオーバー（高位置から斜め下へ）','ケーブル・クロスオーバー（低位置から斜め上へ）','ケーブル・チェストプレス（真横から前方へ）','スミスマシン・フラットベンチプレス','スミスマシン・インクラインベンチプレス','スミスマシン・デクラインベンチプレス'],
-            '脚': ['ノーマル・スクワット（自重）','ワイド・スクワット（自重）','ナロー・スクワット（自重）','フォワード・ランジ（自重・前方へ踏み込む）','バック・ランジ（自重・後方へ引く）','サイド・ランジ（自重・横方へ踏み込む）','ウォーキング・ランジ（自重・歩きながら）','ブルガリアンスクワット（自重・片脚を後ろの台に乗せる）','ピストルスクワット（自重・完全片脚スクワット）','スタンディング・カーフレイズ（自重・つま先立ち）','シングルレッグ・カーフレイズ（自重・片脚つま先立ち）','バーベル・バックスクワット','バーベル・フロントスクワット','ダンベル・スクワット','ダンベル・ゴブレットスクワット','バーベル・フォワードランジ','バーベル・バックランジ','ダンベル・フォワードランジ','ダンベル・バックランジ','バーベル・ウォーキングランジ','ダンベル・ウォーキングランジ','バーベル・ブルガリアンスクワット','ダンベル・ブルガリアンスクワット','バーベル・ルーマニアンデッドリフト（ハムストリングス重視）','ダンベル・ルーマニアンデッドリフト（ハムストリングス重視）','バーベル・カーフレイズ','ダンベル・カーフレイズ','レッグプレス・マシン','ハックスクワット・マシン','レッグエクステンション・マシン（太もも前）','シーテッド・レッグカール・マシン（座って行う・太もも裏）','ライイング・レッグカール・マシン（寝そべって行う・太もも裏）','アブダクション・マシン（股関節を開く・外もも）','アダクション・マシン（股関節を閉じる・内もも）','スミスマシン・スクワット','スミスマシン・ランジ','スミスマシン・ブルガリアンスクワット','シーテッド・カーフレイズ・マシン'],
-            '腕': ['チンニング（逆手・ナローグリップ）','バーベル・バイセップスカール','EZバー・バイセップスカール','フラット・ダンベルバイセップスカール','インクライン・ダンベルバイセップスカール','ダンベル・ハンマーカール','インクライン・ダンベルハンマーカール','ダンベル・コンセントレーションカール','バーベル・プリチャーカール','EZバー・プリチャーカール','ダンベル・プリチャーカール','ケーブル・バイセップスカール','バイセップスカール・マシン','ダイヤモンド・プッシュアップ（手でひし形を作るナロープッシュアップ）','リバース・プッシュアップ（自重）','ディップス（二の腕狙い・上半身を立てる）','バーベル・ライイングトリセプスエクステンション（スカルクラッシャー）','EZバー・ライイングトリセプスエクステンション','ダンベル・ライイングトリセプスエクステンション','ダンベル・キックバック（片腕ずつ）','ダンベル・ダブルアームキックバック（両腕同時）','バーベル・フレンチプレス（オーバーヘッドエクステンション）','EZバー・フレンチプレス','ワンハンド・ダンベルフレンチプレス','ツーハンド・ダンベルフレンチプレス（両手で1つのダンベルを持つ）','ケーブル・プレスダウン（ストレートバー）','ケーブル・プレスダウン（ロープ）','ケーブル・オーバーヘッドトリセップスエクステンション','ディップス・マシン','バーベル・リストカール','ダンベル・リストカール','バーベル・リバースリストカール','ダンベル・リバースリストカール','バーベル・リバースバイセップスカール'],
-            '肩': ['パイク・プッシュアップ（お尻を高く上げた腕立て伏せ）','ハンドスタンド・プッシュアップ（逆立ち腕立て伏せ）','バーベル・ショルダープレス（オーバーヘッドプレス：立った状態）','バーベル・シーテッドショルダープレス（座った状態）','ダンベル・ショルダープレス（立った状態）','ダンベル・シーテッドショルダープレス（座った状態）','アーノルド・プレス（ダンベルを回転させるプレス）','ダンベル・サイドレイズ（立った状態）','ダンベル・シーテッドサイドレイズ（座った状態）','インクライン・ダンベルサイドレイズ（横向きに寝そべる）','ダンベル・フロントレイズ','バーベル・フロントレイズ','プレート・フロントレイズ','ダンベル・ベントオーバーリアレイズ（立った状態から前傾）','ダンベル・シーテッドリアレイズ（座って前傾）','インクライン・ダンベルリアレイズ（ベンチにうつ伏せ）','バーベル・アップライトロウ','ダンベル・アップライトロウ','ショルダープレス・マシン','ケーブル・サイドレイズ','ケーブル・フロントレイズ','ケーブル・リアレイズ','ペックフライ・マシン（逆向きに座るリアデルトフライ）','スミスマシン・ショルダープレス'],
-            'お尻': ['ヒップリフト（グルートブリッジ：自重）','ワンレッグ・ヒップリフト（自重）','ドンキーキック（自重）','ファイヤーハイドラント（自重・中臀筋）','クラムシェル（自重・横向きで膝を開く）','バーベル・ヒップスラスト','ダンベル・ヒップスラスト','バーベル・ワイドスタンススクワット（相撲スクワット）','ダンベル・ワイドスタンススクワット','バーベル・ブルガリアンスクワット（上半身前傾・お尻狙い）','ダンベル・ブルガリアンスクワット（上半身前傾・お尻狙い）','バーベル・スティフレッグドデッドリフト','ダンベル・スティフレッグドデッドリフト','ヒップスラスト・マシン','アブダクション・マシン（上体を少し浮かせてお尻上部狙い）','ケーブル・キックバック','マルチヒップ・マシン（後ろへのキックバック）'],
-            '腹筋': ['ノーマル・クランチ（上部）','レッグレイズ（仰向けで足を上下・下部）','リバース・クランチ（仰向けでお尻を持ち上げる・下部）','ツイスト・クランチ（脇腹）','バイシクル・クランチ（脇腹）','プランク（体幹・腹横筋）','サイド・プランク（体幹・脇腹）','Vシットアップ','ハンギング・レッグレイズ（ぶら下がって脚を上げる・下部）','ハンギング・ニーレイズ（ぶら下がって膝を曲げて上げる・下部）','加重クランチ（プレートやダンベルを胸に抱える）','ダンベル・サイドベント（立った状態で脇腹を伸縮）','バーベル・ツイスト','アブドミナルクランチ・マシン','ケーブル・クランチ（ロープを頭の後ろで保持して跪く）','ケーブル・ウッドチョッパー（斜め上から斜め下へ捻る）','ケーブル・リバースウッドチョッパー（斜め下から斜め上へ捻る）','ロータリートルソー・マシン','アブローラー（腹筋ローラー・膝コロ）','アブローラー（腹筋ローラー・立ちコロ）']
+            '背中': ['チンニング（順手・ワイドグリップ）','チンニング（順手・ナローグリップ）','チンニング（逆手・ワイドグリップ）','チンニング（逆手・ナローグリップ）','チンニング（パラレルグリップ）','インバーテッドロウ（順手）','インバーテッドロウ（逆手）','バックエクステンション（床での背筋運動）','リバースプッシュアップ（背中意識）','バーベル・デッドリフト','ダンベル・デッドリフト','バーベル・ベントオーバーロウ（順手）','バーベル・ベントオーバーロウ（逆手）','ダンベル・ベントオーバーロウ','ワンハンド・ダンベルロウ','ダンベル・プルオーバー','バーベル・Tバーロウ','ラットプルダウン（フロント・ワイドグリップ）','ラットプルダウン（フロント・ナローグリップ）','ラットプルダウン（ビハインドネック）','ラットプルダウン（パラレルグリップ）','シーテッド・ケーブルロウ（ワイド）','シーテッド・ケーブルロウ（ナロー）','シーテッド・マシンロウ','アシスト・チンニング','バックエクステンション（ベンチ）','ストレートアーム・ケーブルプルダウン'],
+            '胸': ['ノーマル・プッシュアップ（通常の腕立て伏せ）','ワイド・プッシュアップ','ナロー・プッシュアップ','インクライン・プッシュアップ','デクライン・プッシュアップ','ディップス（大胸筋下部狙い）','フラット・バーベルベンチプレス','インクライン・バーベルベンチプレス','デクライン・バーベルベンチプレス','フラット・ダンベルプレス','インクライン・ダンベルプレス','デクライン・ダンベルプレス','フラット・ダンベルフライ','インクライン・ダンベルフライ','デクライン・ダンベルフライ','ダンベル・フロアプレス','チェストプレス・マシン（フラット）','インクライン・チェストプレス・マシン','デクライン・チェストプレス・マシン','ペックフライ・マシン','ケーブル・クロスオーバー（高位置）','ケーブル・クロスオーバー（低位置）','ケーブル・チェストプレス','スミスマシン・フラットベンチプレス','スミスマシン・インクラインベンチプレス','スミスマシン・デクラインベンチプレス'],
+            '脚': ['ノーマル・スクワット（自重）','ワイド・スクワット','ナロー・スクワット','フォワード・ランジ','バック・ランジ','サイド・ランジ','ウォーキング・ランジ','ブルガリアンスクワット（自重）','ピストルスクワット','スタンディング・カーフレイズ','シングルレッグ・カーフレイズ','バーベル・バックスクワット','バーベル・フロントスクワット','ダンベル・スクワット','ダンベル・ゴブレットスクワット','バーベル・フォワードランジ','バーベル・バックランジ','ダンベル・フォワードランジ','ダンベル・バックランジ','バーベル・ウォーキングランジ','ダンベル・ウォーキングランジ','バーベル・ブルガリアンスクワット','ダンベル・ブルガリアンスクワット','バーベル・ルーマニアンデッドリフト','ダンベル・ルーマニアンデッドリフト','バーベル・カーフレイズ','ダンベル・カーフレイズ','レッグプレス・マシン','ハックスクワット・マシン','レッグエクステンション・マシン','シーテッド・レッグカール・マシン','ライイング・レッグカール・マシン','アブダクション・マシン','アダクション・マシン','スミスマシン・スクワット','スミスマシン・ランジ','スミスマシン・ブルガリアンスクワット','シーテッド・カーフレイズ・マシン'],
+            '腕': ['チンニング（逆手・ナロー）','バーベル・バイセップスカール','EZバー・バイセップスカール','フラット・ダンベルバイセップスカール','インクライン・ダンベルバイセップスカール','ダンベル・ハンマーカール','インクライン・ダンベルハンマーカール','ダンベル・コンセントレーションカール','バーベル・プリチャーカール','EZバー・プリチャーカール','ダンベル・プリチャーカール','ケーブル・バイセップスカール','バイセップスカール・マシン','ダイヤモンド・プッシュアップ','リバース・プッシュアップ','ディップス（二の腕狙い）','バーベル・ライイングトリセプスエクステンション','EZバー・ライイングトリセプスエクステンション','ダンベル・ライイングトリセプスエクステンション','ダンベル・キックバック','ダンベル・ダブルアームキックバック','バーベル・フレンチプレス','EZバー・フレンチプレス','ワンハンド・ダンベルフレンチプレス','ツーハンド・ダンベルフレンチプレス','ケーブル・プレスダウン（ストレート）','ケーブル・プレスダウン（ロープ）','ケーブル・オーバーヘッドトリセップスエクステンション','ディップス・マシン','バーベル・リストカール','ダンベル・リストカール','バーベル・リバースリストカール','ダンベル・リバースリストカール','バーベル・リバースバイセップスカール'],
+            '肩': ['パイク・プッシュアップ','ハンドスタンド・プッシュアップ','バーベル・ショルダープレス','バーベル・シーテッドショルダープレス','ダンベル・ショルダープレス','ダンベル・シーテッドショルダープレス','アーノルド・プレス','ダンベル・サイドレイズ','ダンベル・シーテッドサイドレイズ','インクライン・ダンベルサイドレイズ','ダンベル・フロントレイズ','バーベル・フロントレイズ','プレート・フロントレイズ','ダンベル・ベントオーバーリアレイズ','ダンベル・シーテッドリアレイズ','インクライン・ダンベルリアレイズ','バーベル・アップライトロウ','ダンベル・アップライトロウ','ショルダープレス・マシン','ケーブル・サイドレイズ','ケーブル・フロントレイズ','ケーブル・リアレイズ','ペックフライ・マシン（リア）','スミスマシン・ショルダープレス'],
+            'お尻': ['ヒップリフト（グルートブリッジ）','ワンレッグ・ヒップリフト','ドンキーキック','ファイヤーハイドラント','クラムシェル','バーベル・ヒップスラスト','ダンベル・ヒップスラスト','バーベル・ワイドスタンススクワット','ダンベル・ワイドスタンススクワット','バーベル・ブルガリアンスクワット（お尻狙い）','ダンベル・ブルガリアンスクワット（お尻狙い）','バーベル・スティフレッグドデッドリフト','ダンベル・スティフレッグドデッドリフト','ヒップスラスト・マシン','アブダクション・マシン（お尻上部狙い）','ケーブル・キックバック','マルチヒップ・マシン'],
+            '腹筋': ['ノーマル・クランチ','レッグレイズ','リバース・クランチ','ツイスト・クランチ','バイシクル・クランチ','プランク','サイド・プランク','Vシットアップ','ハンギング・レッグレイズ','ハンギング・ニーレイズ','加重クランチ','ダンベル・サイドベント','バーベル・ツイスト','アブドミナルクランチ・マシン','ケーブル・クランチ','ケーブル・ウッドチョッパー','ケーブル・リバースウッドチョッパー','ロータリートルソー・マシン','アブローラー（膝コロ）','アブローラー（立ちコロ）']
         };
-
-        let currentCategory = '胸', currentFilterPart = 'ALL', currentFilterPeriod = 'ALL', activeEditId = null;
-        let calendarYear = 2026, calendarMonth = 4, currentSetCount = 5;
-        let appData = JSON.parse(localStorage.getItem('trainwise_core_database')) || { logs: [], personalBests: {} };
-
-        function setDefaultLogDate() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            if(document.getElementById('log-date-picker')) document.getElementById('log-date-picker').value = todayStr;
-        }
-        function isDumbbellExercise(name) { return name.includes('ダンベル') || name.includes('ワンハンド'); }
-
-        function switchTab(tab) {
-            ['dash', 'log', 'memos', 'chat'].forEach(t => {
-                if(document.getElementById(`content-${t}`)) document.getElementById(`content-${t}`).classList.add('hidden');
-                if(document.getElementById(`nav-${t}`)) document.getElementById(`nav-${t}`).className = "flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600";
+        let currentCategory='胸',currentFilterPart='ALL',currentFilterPeriod='ALL',activeEditId=null,calendarYear=2026,calendarMonth=4,currentSetCount=5;
+        let appData=JSON.parse(localStorage.getItem('trainwise_core_database'))||{logs:[],personalBests:{}};
+        function setDefaultLogDate(){const t=new Date().toISOString().split('T')[0];if(document.getElementById('log-date-picker'))document.getElementById('log-date-picker').value=t;}
+        function isDumbbellExercise(t){return t.includes('ダンベル')||t.includes('ワンハンド');}
+        function switchTab(t){
+            ['dash','log','memos','chat'].forEach(e=>{
+                if(document.getElementById(`content-${e}`))document.getElementById(`content-${e}`).classList.add('hidden');
+                if(document.getElementById(`nav-${e}`))document.getElementById(`nav-${e}`).className="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600";
             });
-            if(document.getElementById(`content-${tab}`)) document.getElementById(`content-${tab}`).classList.remove('hidden');
-            if(document.getElementById(`nav-${tab}`)) document.getElementById(`nav-${tab}`).className = "flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold active-tab";
-            if(tab === 'dash') { renderLogList(); updateCharts(currentFilterPart); }
-            if(tab === 'log' && activeEditId === null) { setDefaultLogDate(); document.getElementById('log-memo-input').value = ''; }
-            if(tab === 'memos') renderMemoTimeline();
+            if(document.getElementById(`content-${t}`))document.getElementById(`content-${t}`).classList.remove('hidden');
+            if(document.getElementById(`nav-${t}`)) document.getElementById(`nav-${t}`).className="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold active-tab";
+            if(t==='dash'){renderLogList();updateCharts(currentFilterPart);}
+            if(t==='log'&&activeEditId===null){setDefaultLogDate();document.getElementById('log-memo-input').value='';}
+            if(t==='memos')renderMemoTimeline();
         }
-
-        function renderCalendar() {
-            const grid = document.getElementById('calendar-days-grid'); grid.innerHTML = '';
-            document.getElementById('calendar-month-title').innerText = `${calendarYear}年 ${calendarMonth + 1}月`;
-            const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
-            const totalDays = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-            for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
-            let uniqueDays = new Set();
-            for (let day = 1; day <= totalDays; day++) {
-                const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const daysLogs = appData.logs.filter(l => l.date === dateStr);
-                if(daysLogs.length > 0) uniqueDays.add(day);
-                let cellClass = "p-2 rounded-xl flex flex-col items-center justify-center text-gray-600 font-mono text-[11px] cursor-pointer active:scale-90 transition-all";
-                if (daysLogs.length > 0) cellClass = "p-2 rounded-xl text-white font-black bg-gradient-to-b from-gray-900 via-gray-950 to-black border border-gray-800 cursor-pointer active:scale-90 transition-all";
-                let dotColor = 'text-transparent';
-                if (daysLogs.some(l => l.isPRUpdate)) dotColor = 'text-[#ff007f] text-[9px] font-black';
-                else if (daysLogs.length > 0) dotColor = 'text-[#0aadc7]';
-                grid.innerHTML += `<div class="${cellClass}" onclick="showDayLog('${dateStr}')"><span>${day}</span><span class="text-[7px] leading-none mt-0.5 ${dotColor}">${daysLogs.some(l => l.isPRUpdate) ? '★' : '●'}</span></div>`;
+        function renderCalendar(){
+            const t=document.getElementById('calendar-days-grid');t.innerHTML='';
+            document.getElementById('calendar-month-title').innerText=`${calendarYear}年 ${calendarMonth+1}月`;
+            const e=new Date(calendarYear,calendarMonth,1).getDay(),n=new Date(calendarYear,calendarMonth+1,0).getDate();
+            for(let a=0;a<e;a++)t.innerHTML+='<div></div>';
+            let d=new Set();
+            for(let a=1;a<=n;a++){
+                const n=`${calendarYear}-${String(calendarMonth+1).padStart(2,'0')}-${String(a).padStart(2,'0')}`,c=appData.logs.filter(t=>t.date===n);
+                if(c.length>0)d.add(a);
+                let o="p-2 rounded-xl flex flex-col items-center justify-center text-gray-600 font-mono text-[11px] cursor-pointer active:scale-90 transition-all";
+                if(c.length>0)o="p-2 rounded-xl text-white font-black bg-gradient-to-b from-gray-900 via-gray-950 to-black border border-gray-800 cursor-pointer active:scale-90 transition-all";
+                let r='text-transparent';
+                if(c.some(t=>t.isPRUpdate))r='text-[#ff007f] text-[9px] font-black';else if(c.length>0)r='text-[#0aadc7]';
+                t.innerHTML+=`<div class="${o}" onclick="showDayLog('${n}')"><span>${a}</span><span class="text-[7px] leading-none mt-0.5 ${r}">${c.some(t=>t.isPRUpdate)?'★':'●'}</span></div>`;
             }
-            if(document.getElementById('monthly-count-badge')) document.getElementById('monthly-count-badge').innerText = `${uniqueDays.size} 日`;
+            if(document.getElementById('monthly-count-badge')) document.getElementById('monthly-count-badge').innerText=`${d.size} 日`;
         }
-
-        function showDayLog(dateStr) {
-            const box = document.getElementById('selected-day-log-box'), title = document.getElementById('selected-date-title'), container = document.getElementById('selected-day-records');
-            const daysLogs = appData.logs.filter(l => l.date === dateStr);
-            title.innerText = `🔍 ${dateStr.replace(/-/g, '/')} の実績`; container.innerHTML = ''; box.classList.remove('hidden');
-            if(daysLogs.length === 0) { container.innerHTML = `<p class="text-[10px] text-gray-500 italic py-2 text-center">記録なし</p>`; return; }
-            daysLogs.forEach(log => {
-                let details = log.sets.map((s, idx) => `<span class="bg-black border border-gray-900 px-2 py-0.5 rounded text-gray-400 font-mono">${idx+1}:${s.w}kg×${s.r}</span>`).join(' ');
-                container.innerHTML += `<div class="bg-gray-950 p-2.5 rounded-xl border border-gray-900 text-[11px]"><div class="flex items-center space-x-1.5 mb-2"><span class="px-1.5 py-0.2 rounded bg-[#0aadc7]/10 text-[#0aadc7] text-[8px] font-black">${log.part}</span><span class="font-bold text-white">${log.exercise}</span>${log.isPRUpdate ? '<span class="text-[#ff007f] text-[9px] font-black animate-pulse">★PR</span>' : ''}</div><div class="flex flex-wrap gap-1 text-[9px]">${details}</div>${log.memo ? `<p class="text-[10px] text-amber-400 border-t border-gray-900/60 pt-1 mt-1">📝 ${log.memo}</p>`:''}</div>`;
+        function showDayLog(t){
+            const e=document.getElementById('selected-day-log-box'),n=document.getElementById('selected-date-title'),a=document.getElementById('selected-day-records'),d=appData.logs.filter(e=>e.date===t);
+            n.innerText=`🔍 ${t.replace(/-/g,'/')} の実績`;a.innerHTML='';e.classList.remove('hidden');
+            if(d.length===0){a.innerHTML='<p class="text-[10px] text-gray-500 italic py-2 text-center">記録なし</p>';return;}
+            d.forEach(t=>{
+                let e=t.sets.map((e,n)=>`<span class="bg-black border border-gray-900 px-2 py-0.5 rounded text-gray-400 font-mono">${n+1}枠:${e.w}kg×${e.r}${t.isDumbbell?'(x2)':''}</span>`).join(' ');
+                let n=t.sets.reduce((e,n)=>e+(n.w*n.r*(t.isDumbbell?2:1)),0);
+                a.innerHTML+=`<div class="bg-gray-950 p-2.5 rounded-xl border border-gray-900 text-[11px]"><div class="flex items-center justify-between mb-2"><div><span class="px-1.5 py-0.2 rounded bg-[#0aadc7]/10 text-[#0aadc7] text-[8px] font-black">${t.part}</span> <span class="font-bold text-white">${t.exercise}</span></div><span class="text-[10px] text-[#0aadc7] font-mono font-bold">Vol: ${n}kg</span></div><div class="flex flex-wrap gap-1 text-[9px]">${e}</div>${t.memo?`<p class="text-[10px] text-amber-400 border-t border-gray-900/60 pt-1 mt-1">📝 ${t.memo}</p>`:''}</div>`;
             });
         }
-
-        function changeMonth(dir) { calendarMonth += dir; if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; } if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; } renderCalendar(); document.getElementById('selected-day-log-box').classList.add('hidden'); }
-        function renderCategorySelector() { const container = document.getElementById('category-selector-grid'); container.innerHTML = ''; Object.keys(exerciseMaster).forEach(cat => { container.innerHTML += `<button onclick="selectCategory('${cat}')" class="py-2 rounded-xl text-[10px] font-bold ${cat === currentCategory ? 'bg-[#0aadc7] text-black' : 'bg-gray-900 text-gray-400'}">${cat}</button>`; }); }
-        function selectCategory(cat) { currentCategory = cat; renderCategorySelector(); const select = document.getElementById('log-exercise'); select.innerHTML = ''; exerciseMaster[cat].forEach(ex => select.innerHTML += `<option value="${ex}">${ex}</option>`); updatePreviousStats(); }
-        function renderSetInputs() { const container = document.getElementById('set-inputs-container'); container.innerHTML = ''; for (let i = 1; i <= currentSetCount; i++) { container.innerHTML += `<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${i}</div><input type="number" id="weight-${i}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${i}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`; } }
-        function addNewSetRow() { currentSetCount++; renderSetInputs(); }
-
-        function updatePreviousStats() {
-            const ex = document.getElementById('log-exercise').value;
-            const filtered = appData.logs.filter(l => l.exercise === ex).sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(document.getElementById('stat-prev')) document.getElementById('stat-prev').innerText = filtered[0] ? `${filtered[0].sets[0].w}kg/${filtered[0].sets[0].r}r` : 'なし';
-            if(document.getElementById('stat-prev2')) document.getElementById('stat-prev2').innerText = filtered[1] ? `${filtered[1].sets[0].w}kg/${filtered[1].sets[0].r}r` : 'なし';
-            const lastWithMemo = filtered.find(l => l.memo && l.memo.trim() !== '');
-            if(document.getElementById('live-previous-memo')) document.getElementById('live-previous-memo').innerText = lastWithMemo ? `[${lastWithMemo.date}] ${lastWithMemo.memo}` : 'なし';
+        function changeMonth(t){calendarMonth+=t;if(calendarMonth>11){calendarMonth=0;calendarYear++;}if(calendarMonth<0){calendarMonth=11;calendarYear--;}renderCalendar();document.getElementById('selected-day-log-box').classList.add('hidden');}
+        function renderCategorySelector(){
+            const t=document.getElementById('category-selector-grid');t.innerHTML='';
+            Object.keys(exerciseMaster).forEach(e=>{t.innerHTML+=`<button onclick="selectCategory('${e}')" class="py-2 rounded-xl text-[10px] font-bold ${e===currentCategory?'bg-[#0aadc7] text-black':'bg-gray-900 text-gray-400'}">${e}</button>`;});
+            const e=document.getElementById('part-filters');e.innerHTML='<button onclick="updateCharts(\'ALL\')" id="f-part-ALL" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black">ALL</button>';
+            Object.keys(exerciseMaster).forEach(t=>{e.innerHTML+=`<button onclick="updateCharts('${t}')" id="f-part-${t}" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">${t}</button>`;});
+            const n=document.getElementById('period-filters');n.innerHTML='';
+            ['ALL','6M','3M','1M'].forEach(t=>{n.innerHTML+=`<button onclick="updatePeriod('${t}')" id="f-per-${t}" class="px-2.5 py-0.5 rounded text-[10px] font-bold ${t==='ALL'?'bg-[#0aadc7] text-black':'bg-black text-gray-400'}">${t==='ALL'?'ALL':t==='6M'?'6ヶ月':t==='3M'?'3ヶ月':'1ヶ月'}</button>`;});
         }
-
-        function renderMemoTimeline() {
-            const container = document.getElementById('memo-timeline-container'); container.innerHTML = '';
-            const memoLogs = appData.logs.filter(l => l.memo && l.memo.trim() !== '').sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(memoLogs.length === 0) { container.innerHTML = `<p class="text-xs text-gray-600 text-center py-8 italic">メモ履歴なし</p>`; return; }
-            memoLogs.forEach(log => { container.innerHTML += `<div class="bg-black/60 border border-gray-900 rounded-xl p-3.5 space-y-1.5"><div class="flex items-center justify-between"><div class="flex items-center space-x-1.5"><span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black">${log.part}</span><span class="text-white font-bold text-xs">${log.exercise}</span></div><span class="text-[10px] font-mono text-gray-500">${log.date}</span></div><p class="text-xs text-gray-200 bg-gray-950 p-2.5 rounded-lg border border-gray-900/40">${log.memo}</p></div>`; });
+        function selectCategory(t){currentCategory=t;renderCategorySelector();const e=document.getElementById('log-exercise');e.innerHTML='';exerciseMaster[t].forEach(t=>e.innerHTML+=`<option value="${t}">${t}</option>`);updatePreviousStats();}
+        function renderSetInputs(){const t=document.getElementById('set-inputs-container');t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`;}}
+        function addNewSetRow(){currentSetCount++;renderSetInputs();}
+        function updatePreviousStats(){
+            const t=document.getElementById('log-exercise').value,e=appData.logs.filter(e=>e.exercise===t).sort((t,e)=>new Date(e.date)-new Date(t.date));
+            if(document.getElementById('stat-prev'))document.getElementById('stat-prev').innerText=e[0]?`${e[0].sets[0].w}kg/${e[0].sets[0].r}r`:'なし';
+            if(document.getElementById('stat-prev2'))document.getElementById('stat-prev2').innerText=e[1]?`${e[1].sets[0].w}kg/${e[1].sets[0].r}r`:'なし';
+            const n=e.find(t=>t.memo&&t.memo.trim()!=='');
+            if(document.getElementById('live-previous-memo'))document.getElementById('live-previous-memo').innerText=n?`[${n.date}] ${n.memo}`:'なし';
         }
-
-        function triggerConfetti() {
-            const colors = ['#0aadc7', '#ff007f', '#bd00ff', '#39ff14'];
-            for (let i = 0; i < 50; i++) {
-                const div = document.createElement('div'); div.className = 'confetti'; div.style.left = Math.random() * 100 + 'vw';
-                div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; div.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
-                document.body.appendChild(div); setTimeout(() => div.remove(), 3500);
+        function renderMemoTimeline(){
+            const t=document.getElementById('memo-timeline-container');t.innerHTML='';
+            const e=appData.logs.filter(t=>t.memo&&t.memo.trim()!=='').sort((t,e)=>new Date(e.date)-new Date(t.date));
+            if(e.length===0){t.innerHTML='<p class="text-xs text-gray-600 text-center py-8 italic">メモ履歴なし</p>';return;}
+            e.forEach(e=>{t.innerHTML+=`<div class="bg-black/60 border border-gray-900 rounded-xl p-3.5 space-y-1.5"><div class="flex items-center justify-between"><div class="flex items-center space-x-1.5"><span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black">${e.part}</span><span class="text-white font-bold text-xs">${e.exercise}</span></div><span class="text-[10px] font-mono text-gray-500">${e.date}</span></div><p class="text-xs text-gray-200 bg-gray-950 p-2.5 rounded-lg border border-gray-900/40">${e.memo}</p></div>`;});
+        }
+        function triggerConfetti(){
+            const t=['#0aadc7','#ff007f','#bd00ff','#39ff14'];
+            for(let e=0;e<50;e++){
+                const e=document.createElement('div');e.className='confetti';e.style.left=Math.random()*100+'vw';
+                e.style.backgroundColor=t[Math.floor(Math.random()*t.length)];e.style.animationDuration=Math.random()*2+1.5+'s';
+                document.body.appendChild(e);setTimeout(()=>e.remove(),3500);
             }
         }
-
-        function saveLog() {
-            const exercise = document.getElementById('log-exercise').value, chosenDate = document.getElementById('log-date-picker').value, memoText = document.getElementById('log-memo-input').value.trim();
-            if(!chosenDate) return alert('日付を入れてください');
-            let setsData = [];
-            for (let i = 1; i <= currentSetCount; i++) {
-                let w = parseFloat(document.getElementById(`weight-${i}`).value), r = parseInt(document.getElementById(`rep-${i}`).value);
-                if (w && r) setsData.push({ w: w, r: r });
+        function saveLog(){
+            const t=document.getElementById('log-exercise').value,e=document.getElementById('log-date-picker').value,n=document.getElementById('log-memo-input').value.trim();
+            if(!e)return alert('日付を入れてください');
+            let a=[];for(let t=1;t<=currentSetCount;t++){let e=parseFloat(document.getElementById(`weight-${t}`).value),n=parseInt(document.getElementById(`rep-${t}`).value);if(e&&n)a.push({w:e,r:n});}
+            if(a.length===0)return alert('入力してください');
+            
+            // 🔥 【完全修正】保存するオブジェクト自体にダンベル判定を組み込み
+            let dbMult = isDumbbellExercise(t);
+            let d=Math.round(Math.max(...a.map(t=>t.w*(1+t.r/40))));
+            let c=appData.personalBests[t]||0,o=false;
+            if(c===0||d>c){o=true;appData.personalBests[t]=d;setTimeout(()=>{triggerConfetti();alert(`🎉 自己ベスト更新!! +${c===0?d:(d-c)}kg 達成: ${d}kg 🔥`);},300);}
+            
+            if(activeEditId !== null){
+                let idx=appData.logs.findIndex(t=>t.id===activeEditId);
+                if(idx!==-1){appData.logs[idx].date=e;appData.logs[idx].sets=a;appData.logs[idx].exercise=t;appData.logs[idx].part=currentCategory;appData.logs[idx].isPRUpdate=o;appData.logs[idx].memo=n;appData.logs[idx].isDumbbell=dbMult;}
+                activeEditId=null;document.getElementById('btn-save-workout').innerText="RECORD WORKOUT SESSION";
+            }else{
+                appData.logs.push({id:Date.now(),date:e,part:currentCategory,exercise:t,sets:a,isPRUpdate:o,memo:n,isDumbbell:dbMult});
             }
-            if (setsData.length === 0) return alert('入力してください');
-            let maxRM = Math.round(Math.max(...setsData.map(s => s.w * (1 + s.r / 40)))), previousBestRM = appData.personalBests[exercise] || 0, isPRUpdate = false;
-            if (previousBestRM === 0 || maxRM > previousBestRM) { isPRUpdate = true; appData.personalBests[exercise] = maxRM; setTimeout(() => { triggerConfetti(); alert(`🎉 自己ベスト更新!! +${previousBestRM===0?maxRM:(maxRM-previousBestRM)}kg 達成: ${maxRM}kg 🔥`); }, 300); }
-            if (activeEditId !== null) {
-                let idx = appData.logs.findIndex(l => l.id === activeEditId);
-                if(idx !== -1) { appData.logs[idx].date = chosenDate; appData.logs[idx].sets = setsData; appData.logs[idx].exercise = exercise; appData.logs[idx].part = currentCategory; appData.logs[idx].isPRUpdate = isPRUpdate; appData.logs[idx].memo = memoText; }
-                activeEditId = null; document.getElementById('btn-save-workout').innerText = "RECORD WORKOUT SESSION";
-            } else { appData.logs.push({ id: Date.now(), date: chosenDate, part: currentCategory, exercise: exercise, sets: setsData, isPRUpdate: isPRUpdate, memo: memoText }); }
             localStorage.setItem('trainwise_core_database', JSON.stringify(appData));
-            document.getElementById('log-memo-input').value = ''; currentSetCount = 5; renderSetInputs(); renderCalendar(); switchTab('dash');
+            document.getElementById('log-memo-input').value='';currentSetCount=5;renderSetInputs();renderCalendar();switchTab('dash');
         }
-
-        function renderLogList() {
-            const container = document.getElementById('log-list-container'); container.innerHTML = '';
-            const sorted = [...appData.logs].sort((a,b) => new Date(b.date) - new Date(a.date));
-            if(sorted.length === 0) { container.innerHTML = `<p class="text-xs text-gray-600 text-center py-4">履歴なし</p>`; return; }
-            sorted.forEach(log => {
-                let summary = log.sets.map((s, idx) => `${idx+1}:${s.w}k×${s.r}`).join('|');
-                container.innerHTML += `<div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs"><div class="truncate flex-1 pr-2"><div class="flex items-center space-x-1.5 mb-0.5"><span class="font-mono text-gray-500 font-bold">${log.date.substring(5)}</span><span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black">${log.part}</span><span class="text-white font-bold truncate">${log.exercise}</span></div><p class="text-[10px] text-gray-400 font-mono truncate">${summary}</p></div><div class="flex space-x-1 shrink-0"><button onclick="startEditLog(${log.id})" class="px-2 py-1 rounded bg-blue-950 text-blue-400 text-[10px] font-bold">修正</button><button onclick="deleteLog(${log.id})" class="px-2 py-1 rounded bg-red-950 text-red-400 text-[10px] font-bold">削除</button></div></div>`;
+        function renderLogList(){
+            const t=document.getElementById('log-list-container');t.innerHTML='';
+            const e=[...appData.logs].sort((t,e)=>new Date(e.date)-new Date(t.date));
+            if(e.length===0){t.innerHTML='<p class="text-xs text-gray-600 text-center py-4">履歴なし</p>';return;}
+            e.forEach(e=>{
+                let n=e.sets.map((t,n)=>`${n+1}:${t.w}k×${t.r}`).join('|');
+                let mult = e.isDumbbell ? 2 : 1;
+                let totalV = e.sets.reduce((t,n)=>t+(n.w*n.r*mult),0);
+                t.innerHTML+=`<div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs"><div class="truncate flex-1 pr-2"><div class="flex items-center justify-between mb-0.5"><div><span class="font-mono text-gray-500 font-bold mr-1">${e.date.substring(5)}</span><span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black mr-1">${e.part}</span><span class="text-white font-bold truncate">${e.exercise}</span></div><span class="text-[#0aadc7] font-mono text-[10px]">Vol: ${totalV}kg</span></div><p class="text-[10px] text-gray-400 font-mono truncate">${n}${e.isDumbbell?' (両手分換算)':''}</p></div><div class="flex space-x-1 shrink-0"><button onclick="startEditLog(${e.id})" class="px-2 py-1 rounded bg-blue-950 text-blue-400 text-[10px] font-bold">修正</button><button onclick="deleteLog(${e.id})" class="px-2 py-1 rounded bg-red-950 text-red-400 text-[10px] font-bold">削除</button></div></div>`;
             });
         }
-
-        function startEditLog(id) {
-            const log = appData.logs.find(l => l.id === id); if(!log) return;
-            activeEditId = id; switchTab('log'); selectCategory(log.part);
-            document.getElementById('log-exercise').value = log.exercise; document.getElementById('log-date-picker').value = log.date; document.getElementById('log-memo-input').value = log.memo || '';
-            currentSetCount = Math.max(5, log.sets.length); renderSetInputs();
-            log.sets.forEach((set, i) => { if(document.getElementById(`weight-${i+1}`)) document.getElementById(`weight-${i+1}`).value = set.w; if(document.getElementById(`rep-${i+1}`)) document.getElementById(`rep-${i+1}`).value = set.r; });
-            document.getElementById('btn-save-workout').innerText = "修正内容で確定保存";
+        function startEditLog(t){
+            const e=appData.logs.find(e=>e.id===t);if(!e)return;
+            activeEditId=t;switchTab('log');selectCategory(e.part);
+            document.getElementById('log-exercise').value=e.exercise;document.getElementById('log-date-picker').value=e.date;document.getElementById('log-memo-input').value=e.memo||'';
+            currentSetCount=Math.max(5,e.sets.length);renderSetInputs();
+            e.sets.forEach((t,e)=>{if(document.getElementById(`weight-${e+1}`))document.getElementById(`weight-${e+1}`).value=t.w;if(document.getElementById(`rep-${e+1}`))document.getElementById(`rep-${e+1}`).value=t.r;});
+            document.getElementById('btn-save-workout').innerText="修正内容で確定保存";
         }
-        function deleteLog(id) { if(!confirm('削除しますか？')) return; appData.logs = appData.logs.filter(l => l.id !== id); localStorage.setItem('trainwise_core_database', JSON.stringify(appData)); renderLogList(); renderCalendar(); updateCharts(currentFilterPart); document.getElementById('selected-day-log-box').classList.add('hidden'); }
-
-        let vChart, rChart;
-        const baseOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: '#111' }, ticks: { color: '#444', font: { size: 9 } } }, x: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } } } };
-        function initCharts() {
-            vChart = new Chart(document.getElementById('volumeChart').getContext('2d'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: '#00ffff', borderRadius: 4 }] }, options: baseOptions });
-            rChart = new Chart(document.getElementById('rmChart').getContext('2d'), { type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#ff007f', tension: 0.2, fill: false }] }, options: baseOptions });
+        function deleteLog(t){if(!confirm('削除しますか？'))return;appData.logs=appData.logs.filter(e=>e.id!==t);localStorage.setItem('trainwise_core_database', JSON.stringify(appData));renderLogList();renderCalendar();updateCharts(currentFilterPart);document.getElementById('selected-day-log-box').classList.add('hidden');}
+        let vChart,rChart;
+        const baseOptions={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#111'},ticks:{color:'#444',font:{size:9}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:10}}}}};
+        function initCharts(){
+            vChart=new Chart(document.getElementById('volumeChart').getContext('2d'),{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#00ffff',borderRadius:4}]},options:baseOptions});
+            rChart=new Chart(document.getElementById('rmChart').getContext('2d'),{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#ff007f',tension:0.2,fill:false}]},options:baseOptions});
             updateCharts('ALL');
         }
-        function updatePeriod(p) { currentFilterPeriod = p; ['ALL', '6M', '3M', '1M'].forEach(per => { const btn = document.getElementById(`f-per-${per}`); if(btn) btn.className = per === p ? "px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400"; }); updateCharts(currentFilterPart); }
-
-        function updateCharts(part) {
-            currentFilterPart = part;
-            ['胸','背中','脚','肩','腕','お尻','腹筋','ALL'].forEach(p => { const btn = document.getElementById(`f-part-${p}`); if(btn) btn.className = p === part ? "px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black" : "px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400"; });
-            const now = new Date(); let limit = new Date(0);
-            if (currentFilterPeriod === '1M') limit = new Date(now.setMonth(now.getMonth() - 1)); else if (currentFilterPeriod === '3M') limit = new Date(now.setMonth(now.getMonth() - 3)); else if (currentFilterPeriod === '6M') limit = new Date(now.setMonth(now.getMonth() - 6));
-            let filtered = appData.logs.filter(l => new Date(l.date) >= limit).sort((a,b) => new Date(a.date) - new Date(b.date));
-            if (part !== 'ALL') filtered = filtered.filter(l => l.part === part);
-            let volMap = {}, rmLabels = [], rmValues = [];
-            filtered.forEach(log => {
-                let mult = isDumbbellExercise(log.exercise) ? 2 : 1;
-                let v = log.sets.reduce((acc, s) => acc + (s.w * s.r * mult), 0); volMap[log.date] = (volMap[log.date] || 0) + v;
-                let maxRM = Math.max(...log.sets.map(s => s.w * (1 + s.r / 40))); rmLabels.push(log.date.substring(5)); rmValues.push(Math.round(maxRM));
+        function updatePeriod(t){currentFilterPeriod=t;['ALL','6M','3M','1M'].forEach(e=>{const n=document.getElementById(`f-per-${e}`);if(n)n.className=e===t?"px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400";});updateCharts(currentFilterPart);}
+        function updateCharts(t){
+            currentFilterPart=t;
+            ['胸','背中','脚','肩','腕','お尻','腹筋','ALL'].forEach(e=>{const n=document.getElementById(`f-part-${e}`);if(n)n.className=e===t?"px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400";});
+            const e=new Date();let n=new Date(0);
+            if(currentFilterPeriod==='1M')n=new Date(e.setMonth(e.getMonth()-1));else if(currentFilterPeriod==='3M')n=new Date(e.setMonth(e.getMonth()-3));else if(currentFilterPeriod==='6M')n=new Date(e.setMonth(e.getMonth()-6));
+            let a=appData.logs.filter(t=>new Date(t.date)>=n).sort((t,e)=>new Date(t.date)-new Date(e.date));
+            if(t!=='ALL')a=a.filter(e=>e.part===t);
+            let d={},c=[],o=[];
+            a.forEach(t=>{
+                let e=t.isDumbbell?2:1,n=t.sets.reduce((t,n)=>t+(n.w*n.r*e),0);d[t.date]=(d[t.date]||0)+n;
+                let a=Math.max(...t.sets.map(t=>t.w*(1+t.r/40)));c.push(t.date.substring(5));o.push(Math.round(a));
             });
-            if(vChart) { vChart.data.labels = Object.keys(volMap).map(d => d.substring(5)); vChart.data.datasets[0].data = Object.values(volMap); vChart.update(); }
-            if(rChart) { rChart.data.labels = rmLabels; rChart.data.datasets[0].data = rmValues; rChart.update(); }
-            document.getElementById('vol-graph-title').innerText = `${part} VOLUME TREND (${currentFilterPeriod})`; document.getElementById('rm-graph-title').innerText = `${part} 1RM TREND (${currentFilterPeriod})`;
+            if(vChart){vChart.data.labels=Object.keys(d).map(t=>t.substring(5));vChart.data.datasets[0].data=Object.values(d);vChart.update();}
+            if(rChart){rChart.data.labels=c;rChart.data.datasets[0].data=o;rChart.update();}
+            document.getElementById('vol-graph-title').innerText=`${t} VOLUME TREND (${currentFilterPeriod})`;document.getElementById('rm-graph-title').innerText=`${t} 1RM TREND (${currentFilterPeriod})`;
         }
-
-        function saveApiKey() { const key = document.getElementById('gemini-key-input').value.trim(); if(!key) return alert('入力してください'); localStorage.setItem('trainwise_final_key', key); document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`; }
-        async function sendMessage() {
-            const input = document.getElementById('chat-input'), box = document.getElementById('chat-box'), userText = input.value.trim(); if (!userText) return;
-            box.innerHTML += `<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl max-w-[88%] ml-auto text-right text-white font-medium">${userText}</div>`; input.value = ''; box.scrollTop = box.scrollHeight;
-            const apiKey = localStorage.getItem('trainwise_final_key'); if(!apiKey) { setTimeout(() => { box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl max-w-[88%] text-xs">APIキーを設定してください。</div>`; box.scrollTop = box.scrollHeight; }, 800); return; }
-            const loadingId = 'loading-' + Date.now(); box.innerHTML += `<div id="${loadingId}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`; box.scrollTop = box.scrollHeight;
-            try {
-                const statsSummary = JSON.stringify(appData.logs);
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: `ユーザーのトレーニングログ: ${statsSummary}。質問:「${userText}」に専門的アドバイスを簡潔に回答してください。日本語で回答してください。` }] }] }) });
-                const data = await response.json(); document.getElementById(loadingId).remove();
-                box.innerHTML += `<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>')}</div>`;
-            } catch (err) { if(document.getElementById(loadingId)) document.getElementById(loadingId).remove(); box.innerHTML += `<div class="text-red-500 p-2">通信エラー。</div>`; }
-            box.scrollTop = box.scrollHeight;
+        function saveApiKey(){const t=document.getElementById('gemini-key-input').value.trim();if(!t)return alert('入力してください');localStorage.setItem('trainwise_final_key',t);document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>';}
+        async function sendMessage(){
+            const t=document.getElementById('chat-input'),e=document.getElementById('chat-box'),n=t.value.trim();if(!n)return;
+            e.innerHTML+=`<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl max-w-[88%] ml-auto text-right text-white font-medium">${n}</div>`;t.value='';e.scrollTop=e.scrollHeight;
+            const a=localStorage.getItem('trainwise_final_key');if(!a){setTimeout(() => {e.innerHTML+='<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl max-w-[88%] text-xs">APIキーを設定してください。</div>';e.scrollTop=e.scrollHeight;},800);return;}
+            const d='loading-'+Date.now();e.innerHTML+=`<div id="${d}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`;e.scrollTop=e.scrollHeight;
+            try{
+                const c=JSON.stringify(appData.logs),o=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`ユーザーログ: ${c}。質問:「${n}」に専門的アドバイスを簡潔に回答してください。日本語で。`}]}]})}),r=await o.json();document.getElementById(d).remove();
+                e.innerHTML+=`<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${r.candidates[0].content.parts[0].text.replace(/\n/g,'<br>')}</div>`;
+            }catch(t){if(document.getElementById(d))document.getElementById(d).remove();e.innerHTML+='<div class="text-red-500 p-2">通信エラー。</div>';}
+            e.scrollTop=e.scrollHeight;
         }
-
-        window.onload = () => { setDefaultLogDate(); renderCalendar(); selectCategory('胸'); renderSetInputs(); renderCategorySelector(); initCharts(); renderLogList(); if(localStorage.getItem('trainwise_final_key')) document.getElementById('api-key-panel').innerHTML = `<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>`; };
+        window.onload=()=>{setDefaultLogDate();renderCategorySelector();selectCategory('胸');renderSetInputs();initCharts();renderLogList();renderCalendar();if(localStorage.getItem('trainwise_final_key'))document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>';};
     </script>
 </body>
 </html>
