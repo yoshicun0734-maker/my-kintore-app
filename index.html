@@ -10,15 +10,17 @@
         body{background:#000;color:#fff;font-family:sans-serif;font-size:15px;}
         .card-dark{background:#0c0f17;border:1px solid #1a202c;}
         .active-tab{color:#0aadc7;font-weight:900;}
-        .active-tab svg{stroke:#0aadc7;stroke-width:2.5px;}
         *{ -webkit-tap-highlight-color:transparent;}
-        .scroll-container{overflow-y:auto;height:calc(100vh - 140px);padding-bottom:60px;}
+        /* 下部余白を120pxに拡大し、メニューとの被りを完全に解消 */
+        .scroll-container{overflow-y:auto;height:calc(100vh - 160px);padding-bottom:120px;}
         .confetti{position:fixed;width:8px;height:8px;z-index:999;animation:fall linear forwards;}
         @keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+        /* メニューの背景をさらに高級感のある透過ブラックに */
+        .nav-glass{background:rgba(10,10,10,0.9);backdrop-filter:blur(15px);border-top:1px solid rgba(255,255,255,0.1);}
     </style>
 </head>
 <body class="max-w-md mx-auto min-h-screen flex flex-col justify-between bg-black select-none">
-    <header class="fixed top-0 left-0 right-0 max-w-md mx-auto bg-black/90 backdrop-blur-md z-50 px-5 pt-4 pb-3 flex justify-between items-center border-b border-gray-900/60">
+    <header class="fixed top-0 left-0 right-0 max-w-md mx-auto bg-black/90 backdrop-blur-md z-50 px-5 pt-5 pb-3 flex justify-between items-center border-b border-gray-900/60">
         <div>
             <h1 class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#0aadc7] to-[#81e6d9]">TRAINWISE AI</h1>
             <p class="text-[10px] text-gray-500 font-mono mt-0.5">PREMIUM WORKOUT ARCHITECT</p>
@@ -27,24 +29,17 @@
             <svg class="w-4 h-4 text-[#0aadc7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </button>
     </header>
-    <main class="flex-1 mt-[76px] px-5 scroll-container text-sm">
+    <main class="flex-1 mt-[82px] px-5 scroll-container text-sm">
         <section class="mb-6 pt-3 bg-[#0c0f17]/40 p-4 rounded-2xl border border-gray-900">
-            <div class="flex justify-between items-center mb-3.5 px-1">
-                <button onclick="changeMonth(-1)" class="text-[#0aadc7] p-1.5 active:scale-70 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <span id="calendar-month-title" class="text-sm font-bold font-mono tracking-wider"></span>
-                <button onclick="changeMonth(1)" class="text-[#0aadc7] p-1.5 active:scale-70 transition-all">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-                </button>
+            <div class="flex justify-between items-center mb-4 px-1">
+                <button onclick="changeMonth(-1)" class="text-[#0aadc7] p-2 active:scale-70 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg></button>
+                <span id="calendar-month-title" class="text-sm font-bold font-mono tracking-wider text-[#0aadc7]"></span>
+                <button onclick="changeMonth(1)" class="text-[#0aadc7] p-2 active:scale-70 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg></button>
             </div>
-            <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-600 uppercase mb-1.5"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+            <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-600 uppercase mb-2"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
             <div id="calendar-days-grid" class="grid grid-cols-7 gap-1 text-center font-mono text-sm mb-3"></div>
-            <div id="selected-day-log-box" class="border-t border-gray-900/80 pt-3 mt-2 hidden">
-                <h4 id="selected-date-title" class="text-[11px] font-black text-[#0aadc7] mb-2 font-mono tracking-wider"></h4>
-                <div id="selected-day-records" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
-            </div>
-            <div class="border-t border-gray-900/60 pt-2.5 text-center mt-2"><p class="text-xs text-gray-400 font-bold">今月の総トレーニング日数: <span id="monthly-count-badge" class="text-[#0aadc7] text-xs font-black bg-[#0aadc7]/10 px-2 py-0.5 rounded-md font-mono">0 日</span></p></div>
+            <div id="selected-day-log-box" class="border-t border-gray-900/80 pt-3 mt-2 hidden"><h4 id="selected-date-title" class="text-[11px] font-black text-[#0aadc7] mb-2 font-mono tracking-wider"></h4><div id="selected-day-records" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div></div>
+            <div class="border-t border-gray-900/60 pt-3 text-center mt-2"><p class="text-xs text-gray-400 font-bold">今月の総トレーニング日数: <span id="monthly-count-badge" class="text-[#0aadc7] text-xs font-black bg-[#0aadc7]/10 px-2 py-0.5 rounded-md font-mono">0 日</span></p></div>
         </section>
         <div id="content-dash" class="space-y-6">
             <div class="space-y-3 bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900">
@@ -57,49 +52,49 @@
         </div>
         <div id="content-log" class="hidden space-y-6">
             <div class="card-dark p-5 rounded-2xl space-y-5">
-                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">📅 トレーニング実施日</label><input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none font-mono font-bold"></div>
-                <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase">1. 対象部位</label><div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div></div>
-                <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase">2. ワークアウト種目</label><select id="log-exercise" onchange="updatePreviousStats()" class="w-full bg-black border border-gray-800 rounded-xl p-3.5 text-sm text-white focus:outline-none font-bold"></select></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📅 トレーニング実施日</label><input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none font-mono font-bold"></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. 対象部位</label><div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">2. ワークアウト種目</label><select id="log-exercise" onchange="updatePreviousStats()" class="w-full bg-black border border-gray-800 rounded-xl p-3.5 text-sm text-white focus:outline-none font-bold"></select></div>
                 <div class="space-y-2">
                     <div class="grid grid-cols-2 gap-3 bg-black p-3 rounded-xl border border-gray-900 text-center">
-                        <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀ 前回実績</span><span id="stat-prev" class="text-xs font-mono font-bold text-[#0aadc7]">なし</span></div>
-                        <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀◀ 前々回実績</span><span id="stat-prev2" class="text-xs font-mono font-bold text-gray-400">なし</span></div>
+                        <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀ 前回実績</span><span id="stat-prev" class="text-sm font-mono font-bold text-[#0aadc7]">なし</span></div>
+                        <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀◀ 前々回実績</span><span id="stat-prev2" class="text-sm font-mono font-bold text-gray-400">なし</span></div>
                     </div>
-                    <div class="bg-[#0c0f17] border border-dashed border-gray-900 p-2.5 rounded-xl"><span class="block text-[10px] text-[#0aadc7] font-black uppercase mb-1">💡 この種目の直近のメモ</span><p id="live-previous-memo" class="text-xs text-gray-300 italic">なし</p></div>
+                    <div class="bg-[#0c0f17] border border-dashed border-gray-900 p-2.5 rounded-xl"><span class="block text-[10px] text-[#0aadc7] font-black uppercase mb-1">💡 この種目の直近のメモ</span><p id="live-previous-memo" class="text-sm text-gray-300 italic">なし</p></div>
                 </div>
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase"><div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div></div>
                     <div id="set-inputs-container" class="space-y-2"></div>
-                    <button onclick="addNewSetRow()" class="w-full py-2.5 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">＋ セットを追加</button>
+                    <button onclick="addNewSetRow()" class="w-full py-3 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">＋ セットを追加</button>
                 </div>
-                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase">📝 今回のメモ・気づき</label><textarea id="log-memo-input" rows="2" placeholder="コンディションやフォーム意識など" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none resize-none font-medium"></textarea></div>
-                <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] text-black font-black py-4 rounded-xl text-sm active:scale-[0.98]">RECORD WORKOUT SESSION</button>
+                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📝 今回のメモ・気づき</label><textarea id="log-memo-input" rows="2" placeholder="気づきを入力..." class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none resize-none font-medium"></textarea></div>
+                <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] text-black font-black py-4 rounded-xl text-sm active:scale-95 transition-all">RECORD WORKOUT SESSION</button>
             </div>
         </div>
         <div id="content-memos" class="hidden space-y-4">
-            <div class="bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900"><h3 class="text-xs font-black text-gray-400 uppercase mb-3">📝 ワークアウト・メモ履歴一覧</h3><div id="memo-timeline-container" class="space-y-3 max-h-[68vh] overflow-y-auto pr-1"></div></div>
+            <div class="bg-[#0c0f17]/80 p-4 rounded-2xl border border-gray-900"><h3 class="text-xs font-black text-gray-400 uppercase mb-3">📝 メモ履歴一覧</h3><div id="memo-timeline-container" class="space-y-3 max-h-[68vh] overflow-y-auto pr-1"></div></div>
         </div>
         <div id="content-chat" class="hidden flex flex-col h-[60vh] justify-between">
             <div id="api-key-panel" class="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl text-center text-xs space-y-2 mb-3"><p class="text-amber-400 font-bold">⚠️ Geminiチャットを有効化</p><div class="flex space-x-1"><input type="password" id="gemini-key-input" placeholder="API Keyを入力..." class="flex-1 bg-black border border-gray-800 rounded p-1.5 text-center font-mono text-white text-[11px]"><button onclick="saveApiKey()" class="bg-amber-500 text-black px-3 font-bold rounded text-[11px]">有効化</button></div></div>
             <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2"><div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl">AI Coach Agent: リアルタイム分析します！</div></div>
-            <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900"><input type="text" id="chat-input" placeholder="AIトレーナーに相談..." class="flex-1 bg-transparent px-2 text-sm text-white focus:outline-none"><button onclick="sendMessage()" class="bg-[#0aadc7] text-black px-4 py-2 rounded-lg font-black text-xs">ASK</button></div>
+            <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900"><input type="text" id="chat-input" placeholder="AIトレーナーに相談..." class="flex-1 bg-transparent px-2 text-sm text-white focus:outline-none"><button onclick="sendMessage()" class="bg-[#0aadc7] text-black px-4 py-2 rounded-lg font-black text-xs active:scale-95 transition-all">ASK</button></div>
         </div>
     </main>
-    <nav class="fixed bottom-0 left-0 right-0 bg-black/90 border-t border-gray-950 max-w-md mx-auto flex justify-around items-center h-16 text-center z-50">
-        <button onclick="switchTab('dash')" id="nav-dash" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold active-tab">
-            <svg class="w-5 h-5 mb-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto nav-glass z-50 flex justify-around items-center pt-3 pb-8 text-center">
+        <button onclick="switchTab('dash')" id="nav-dash" class="flex-1 flex flex-col items-center text-[10px] font-bold active-tab">
+            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
             <span>分析</span>
         </button>
-        <button onclick="switchTab('log')" id="nav-log" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600">
-            <svg class="w-5 h-5 mb-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+        <button onclick="switchTab('log')" id="nav-log" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500">
+            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
             <span>記録</span>
         </button>
-        <button onclick="switchTab('memos')" id="nav-memos" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600">
-            <svg class="w-5 h-5 mb-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        <button onclick="switchTab('memos')" id="nav-memos" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500">
+            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             <span>メモ</span>
         </button>
-        <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600">
-            <svg class="w-5 h-5 mb-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500">
+            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
             <span>AI相談</span>
         </button>
     </nav>
@@ -108,10 +103,10 @@
             '背中': ['チンニング（順手・ワイドグリップ）','チンニング（順手・ナローグリップ）','チンニング（逆手・ワイドグリップ）','チンニング（逆手・ナローグリップ）','チンニング（パラレルグリップ）','インバーテッドロウ（順手）','インバーテッドロウ（逆手）','バックエクステンション（床での背筋運動）','リバースプッシュアップ（背中意識）','バーベル・デッドリフト','ダンベル・デッドリフト','バーベル・ベントオーバーロウ（順手）','バーベル・ベントオーバーロウ（逆手）','ダンベル・ベントオーバーロウ','ワンハンド・ダンベルロウ','ダンベル・プルオーバー','バーベル・Tバーロウ','ラットプルダウン（フロント・ワイドグリップ）','ラットプルダウン（フロント・ナローグリップ）','ラットプルダウン（ビハインドネック）','ラットプルダウン（パラレルグリップ）','シーテッド・ケーブルロウ（ワイド）','シーテッド・ケーブルロウ（ナロー）','シーテッド・マシンロウ','アシスト・チンニング','バックエクステンション（ベンチ）','ストレートアーム・ケーブルプルダウン'],
             '胸': ['ノーマル・プッシュアップ（通常の腕立て伏せ）','ワイド・プッシュアップ','ナロー・プッシュアップ','インクライン・プッシュアップ','デクライン・プッシュアップ','ディップス（大胸筋下部狙い）','フラット・バーベルベンチプレス','インクライン・バーベルベンチプレス','デクライン・バーベルベンチプレス','フラット・ダンベルプレス','インクライン・ダンベルプレス','デクライン・ダンベルプレス','フラット・ダンベルフライ','インクライン・ダンベルフライ','デクライン・ダンベルフライ','ダンベル・フロアプレス','チェストプレス・マシン（フラット）','インクライン・チェストプレス・マシン','デクライン・チェストプレス・マシン','ペックフライ・マシン','ケーブル・クロスオーバー（高位置）','ケーブル・クロスオーバー（低位置）','ケーブル・チェストプレス','スミスマシン・フラットベンチプレス','スミスマシン・インクラインベンチプレス','スミスマシン・デクラインベンチプレス'],
             '脚': ['ノーマル・スクワット（自重）','ワイド・スクワット','ナロー・スクワット','フォワード・ランジ','バック・ランジ','サイド・ランジ','ウォーキング・ランジ','ブルガリアンスクワット（自重）','ピストルスクワット','スタンディング・カーフレイズ','シングルレッグ・カーフレイズ','バーベル・バックスクワット','バーベル・フロントスクワット','ダンベル・スクワット','ダンベル・ゴブレットスクワット','バーベル・フォワードランジ','バーベル・バックランジ','ダンベル・フォワードランジ','ダンベル・バックランジ','バーベル・ウォーキングランジ','ダンベル・ウォーキングランジ','バーベル・ブルガリアンスクワット','ダンベル・ブルガリアンスクワット','バーベル・ルーマニアンデッドリフト','ダンベル・ルーマニアンデッドリフト','バーベル・カーフレイズ','ダンベル・カーフレイズ','レッグプレス・マシン','ハックスクワット・マシン','レッグエクステンション・マシン','シーテッド・レッグカール・マシン','ライイング・レッグカール・マシン','アブダクション・マシン','アダクション・マシン','スミスマシン・スクワット','スミスマシン・ランジ','スミスマシン・ブルガリアンスクワット','シーテッド・カーフレイズ・マシン'],
-            '腕': ['チンニング（逆手・ナロー）','バーベル・バイセップスカール','EZバー・バイセップスカール','フラット・ダンベルバイセップスカール','インクライン・ダンベルバイセップスカール','ダンベル・ハンマーカール','インクライン・ダンベルハンマーカール','ダンベル・コンセントレーションカール','バーベル・プリチャーカール','EZバー・プリチャーカール','ダンベル・プリチャーカール','ケーブル・バイセップスカール','バイセップスカール・マシン','ダイヤモンド・プッシュアップ','リバース・プッシュアップ','ディップス（二の腕狙い）','バーベル・ライイングトリセプスエクステンション','EZバー・ライイングトリセプスエクステンション','ダンベル・ライイングトリセプスエクステンション','ダンベル・キックバック','ダンベル・ダブルアームキックバック','バーベル・フレンチプレス','EZバー・フレンチプレス','ワンハンド・ダンベルフレンチプレス','ツーハンド・ダンベルフレンチプレス','ケーブル・プレスダウン（ストレート）','ケーブル・プレスダウン（ロープ）','ケーブル・オーバーヘッドトリセップスエクステンション','ディップス・マシン','バーベル・リストカール','ダンベル・リストカール','バーベル・リバースリストカール','ダンベル・リバースリストカール','バーベル・リバースバイセップスカール'],
-            '肩': ['パイク・プッシュアップ','ハンドスタンド・プッシュアップ','バーベル・ショルダープレス','バーベル・シーテッドショルダープレス','ダンベル・ショルダープレス','ダンベル・シーテッドショルダープレス','アーノルド・プレス','ダンベル・サイドレイズ','ダンベル・シーテッドサイドレイズ','インクライン・ダンベルサイドレイズ','ダンベル・フロントレイズ','バーベル・フロントレイズ','プレート・フロントレイズ','ダンベル・ベントオーバーリアレイズ','ダンベル・シーテッドリアレイズ','インクライン・ダンベルリアレイズ','バーベル・アップライトロウ','ダンベル・アップライトロウ','ショルダープレス・マシン','ケーブル・サイドレイズ','ケーブル・フロントレイズ','ケーブル・リアレイズ','ペックフライ・マシン（リア）','スミスマシン・ショルダープレス'],
-            'お尻': ['ヒップリフト（グルートブリッジ）','ワンレッグ・ヒップリフト','ドンキーキック','ファイヤーハイドラント','クラムシェル','バーベル・ヒップスラスト','ダンベル・ヒップスラスト','バーベル・ワイドスタンススクワット','ダンベル・ワイドスタンススクワット','バーベル・ブルガリアンスクワット（お尻狙い）','ダンベル・ブルガリアンスクワット（お尻狙い）','バーベル・スティフレッグドデッドリフト','ダンベル・スティフレッグドデッドリフト','ヒップスラスト・マシン','アブダクション・マシン（お尻上部狙い）','ケーブル・キックバック','マルチヒップ・マシン'],
-            '腹筋': ['ノーマル・クランチ','レッグレイズ','リバース・クランチ','ツイスト・クランチ','バイシクル・クランチ','プランク','サイド・プランク','Vシットアップ','ハンギング・レッグレイズ','ハンギング・ニーレイズ','加重クランチ','ダンベル・サイドベント','バーベル・ツイスト','アブドミナルクランチ・マシン','ケーブル・クランチ','ケーブル・ウッドチョッパー','ケーブル・リバースウッドチョッパー','ロータリートルソー・マシン','アブローラー（膝コロ）','アブローラー（立ちコロ）']
+            '腕': ['チンニング（逆手・ナロー）','バーベル・バイセップスカール','EZバー・バイセップスカール','フラット・ダンベルバイセップスカール','インクライン・ダンベルバイセップスカール','ダンベル・ハンマーカール','インクライン・ダンベルハンマーカール','ダンベル・コンセントレーションカール','バーベル・プリチャーカール','EZバー・プリチャーカール','ダンベル・プリチャーカール','ケーブル・バイセップスカール','バイセップスカール・マシン','ダイヤモンド・プッシュアップ','リバース・プッシュアップ','ディップス（二の腕狙い）','バーベル・ライイングトリセプスエクステンション','EZバー・ライイングトリセプスエクステンション','ダンベル・ライイングトリセプスエクステンション','ダンベル・キキバック','ダンベル・ダブルアームキックバック','バーベル・フレンチプレス','EZバー・フレンチプレス','ワンハンド・ダンベルフレンチプレス','ツーハンド・ダンベルフレンチプレス','ケーブル・プレスダウン（ストレート）','ケーブル・プレスダウン（ロープ）','ケーブル・オーバーヘッドトリセップスエクステンション','ディップス・マシン','バーベル・リストカール','ダンベル・リストカール','バーベル・リバースリストカール','ダンベル・リバースリストカール','バーベル・リバースバイセップスカール'],
+            '肩': ['パイク・プッシュアップ','ハンドスタンド・プッシュアップ','バーベル・ショルダープレス','バーベル・シーテッドショルダープレス','ダンベル・ショルダープレス','ダンベル・シーテッドショルダープレス','アーノルド・プレス','ダンベル・サイドレイズ','ダンベル・シーテッドサイドレイズ','インクライン・ダンベルサイドレイズ','ダンベル・フロントレイズ','バーベル・フロントレイズ','プレート・フロントレイズ','ダンベル・ベントオーバーリアレイズ','ダンベル・シーテッドリアレイズ','インクライン・ダンベルリアレイズ','バーベル・アップライトロウ','ダンベル・アップライトロウ','ショルダープレス・マシン','ケーブル・サイドレイズ','ケーブル・フロントレイズ','ケーブル・リアレイズ','ペックフライ・マシン（リアデルト）','スミスマシン・ショルダープレス'],
+            'お尻': ['ヒップリフト','ワンレッグ・ヒップリフト','ドンキーキック','ファイヤーハイドラント','クラムシェル','バーベル・ヒップスラスト','ダンベル・ヒップスラスト','バーベル・ワイドスタンススクワット','ダンベル・ワイドスタンススクワット','バーベル・ブルガリアンスクワット（尻）','ダンベル・ブルガリアンスクワット（尻）','バーベル・スティフレッグドデッドリフト','ダンベル・スティフレッグドデッドリフト','ヒップスラスト・マシン','アブダクション・マシン（尻上部）','ケーブル・キックバック','マルチヒップ・マシン'],
+            '腹筋': ['ノーマル・クランチ','レッグレイズ','リバース・クランチ','ツイスト・クランチ','バイシクル・クランチ','プランク','サイド・プランク','Vシットアップ','ハンギング・レッグレイズ','ハンギング・ニーレイズ','加重クランチ','ダンベル・サイドベント','バーベル・ツイスト','アブドミナルクランチ','ケーブル・クランチ','ケーブル・ウッドチョッパー','ケーブル・リバースウッドチョッパー','ロータリートルソー','アブローラー（膝コロ）','アブローラー（立ちコロ）']
         };
         let currentCategory='胸',currentFilterPart='ALL',currentFilterPeriod='ALL',activeEditId=null,calendarYear=2026,calendarMonth=4,currentSetCount=5;
         let appData=JSON.parse(localStorage.getItem('trainwise_core_database'))||{logs:[],personalBests:{}};
@@ -120,20 +115,12 @@
         function switchTab(t){
             ['dash','log','memos','chat'].forEach(e=>{
                 if(document.getElementById(`content-${e}`))document.getElementById(`content-${e}`).classList.add('hidden');
-                const navBtn = document.getElementById(`nav-${e}`);
-                if(navBtn){
-                    navBtn.className="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold text-gray-600";
-                    navBtn.querySelector('svg').style.stroke = "#4b5563";
-                    navBtn.querySelector('svg').style.strokeWidth = "2px";
-                }
+                const btn = document.getElementById(`nav-${e}`);
+                if(btn){btn.className="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500";btn.querySelector('svg').style.strokeWidth="2px";}
             });
             if(document.getElementById(`content-${t}`))document.getElementById(`content-${t}`).classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${t}`);
-            if(activeNav){
-                activeNav.className="flex-1 h-full flex flex-col justify-center items-center text-[11px] font-bold active-tab";
-                activeNav.querySelector('svg').style.stroke = "#0aadc7";
-                activeNav.querySelector('svg').style.strokeWidth = "2.5px";
-            }
+            const act = document.getElementById(`nav-${t}`);
+            if(act){act.className="flex-1 flex flex-col items-center text-[10px] font-bold active-tab";act.querySelector('svg').style.strokeWidth="2.5px";}
             if(t==='dash'){renderLogList();updateCharts(currentFilterPart);}
             if(t==='log'&&activeEditId===null){setDefaultLogDate();document.getElementById('log-memo-input').value='';}
             if(t==='memos')renderMemoTimeline();
@@ -162,7 +149,7 @@
             d.forEach(t=>{
                 let e=t.sets.map((e,n)=>`<span class="bg-black border border-gray-900 px-2 py-0.5 rounded text-gray-400 font-mono">${n+1}枠:${e.w}kg×${e.r}${t.isDumbbell?'(x2)':''}</span>`).join(' ');
                 let n=t.sets.reduce((e,n)=>e+(n.w*n.r*(t.isDumbbell?2:1)),0);
-                a.innerHTML+=`<div class="bg-gray-950 p-2.5 rounded-xl border border-gray-900 text-xs"><div class="flex items-center justify-between mb-2"><div><span class="px-1.5 py-0.2 rounded bg-[#0aadc7]/10 text-[#0aadc7] text-[9px] font-black mr-1">${t.part}</span> <span class="font-bold text-white">${t.exercise}</span></div><span class="text-xs text-[#0aadc7] font-mono font-bold">Vol: ${n}kg</span></div><div class="flex flex-wrap gap-1 text-[10px]">${e}</div>${t.memo?`<p class="text-xs text-amber-400 border-t border-gray-900/60 pt-1 mt-1">📝 ${t.memo}</p>`:''}</div>`;
+                a.innerHTML+=`<div class="bg-gray-950 p-2.5 rounded-xl border border-gray-900 text-xs mb-2"><div class="flex items-center justify-between mb-2"><div><span class="px-1.5 py-0.2 rounded bg-[#0aadc7]/10 text-[#0aadc7] text-[9px] font-black mr-1">${t.part}</span> <span class="font-bold text-white">${t.exercise}</span></div><span class="text-xs text-[#0aadc7] font-mono font-bold">Vol: ${n}kg</span></div><div class="flex flex-wrap gap-1 text-[10px]">${e}</div>${t.memo?`<p class="text-xs text-amber-400 border-t border-gray-900/60 pt-1 mt-1">📝 ${t.memo}</p>`:''}</div>`;
             });
         }
         function changeMonth(t){calendarMonth+=t;if(calendarMonth>11){calendarMonth=0;calendarYear++;}if(calendarMonth<0){calendarMonth=11;calendarYear--;}renderCalendar();document.getElementById('selected-day-log-box').classList.add('hidden');}
@@ -175,7 +162,7 @@
             ['ALL','6M','3M','1M'].forEach(t=>{n.innerHTML+=`<button onclick="updatePeriod('${t}')" id="f-per-${t}" class="px-2.5 py-0.5 rounded text-[10px] font-bold ${t==='ALL'?'bg-[#0aadc7] text-black':'bg-black text-gray-400'}">${t==='ALL'?'ALL':t==='6M'?'6ヶ月':t==='3M'?'3ヶ月':'1ヶ月'}</button>`;});
         }
         function selectCategory(t){currentCategory=t;renderCategorySelector();const e=document.getElementById('log-exercise');e.innerHTML='';exerciseMaster[t].forEach(t=>e.innerHTML+=`<option value="${t}">${t}</option>`);updatePreviousStats();}
-        function renderSetInputs(){const t=document.getElementById('set-inputs-container');t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none');</div>`;}}
+        function renderSetInputs(){const t=document.getElementById('set-inputs-container');t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`;}}
         function addNewSetRow(){currentSetCount++;renderSetInputs();}
         function updatePreviousStats(){
             const t=document.getElementById('log-exercise').value,e=appData.logs.filter(e=>e.exercise===t).sort((t,e)=>new Date(e.date)-new Date(t.date));
@@ -192,31 +179,18 @@
         }
         function triggerConfetti(){
             const t=['#0aadc7','#ff007f','#bd00ff','#39ff14'];
-            for(let e=0;e<50;e++){
-                const e=document.createElement('div');e.className='confetti';e.style.left=Math.random()*100+'vw';
-                e.style.backgroundColor=t[Math.floor(Math.random()*t.length)];e.style.animationDuration=Math.random()*2+1.5+'s';
-                document.body.appendChild(e);setTimeout(()=>e.remove(),3500);
-            }
+            for(let e=0;e<40;e++){const e=document.createElement('div');e.className='confetti';e.style.left=Math.random()*100+'vw';e.style.backgroundColor=t[Math.floor(Math.random()*t.length)];e.style.animationDuration=Math.random()*2+1+'s';document.body.appendChild(e);setTimeout(()=>e.remove(),3000);}
         }
         function saveLog(){
             const t=document.getElementById('log-exercise').value,e=document.getElementById('log-date-picker').value,n=document.getElementById('log-memo-input').value.trim();
             if(!e)return alert('日付を入れてください');
             let a=[];for(let t=1;t<=currentSetCount;t++){let e=parseFloat(document.getElementById(`weight-${t}`).value),n=parseInt(document.getElementById(`rep-${t}`).value);if(e&&n)a.push({w:e,r:n});}
             if(a.length===0)return alert('入力してください');
-            
-            let dbMult = isDumbbellExercise(t);
-            let d=Math.round(Math.max(...a.map(t=>t.w*(1+t.r/40))));
-            let c=appData.personalBests[t]||0,o=false;
-            if(c===0||d>c){o=true;appData.personalBests[t]=d;setTimeout(()=>{triggerConfetti();alert(`🎉 自己ベスト更新!! +${c===0?d:(d-c)}kg 達成: ${d}kg 🔥`);},300);}
-            
-            if(activeEditId !== null){
-                let idx=appData.logs.findIndex(t=>t.id===activeEditId);
-                if(idx!==-1){appData.logs[idx].date=e;appData.logs[idx].sets=a;appData.logs[idx].exercise=t;appData.logs[idx].part=currentCategory;appData.logs[idx].isPRUpdate=o;appData.logs[idx].memo=n;appData.logs[idx].isDumbbell=dbMult;}
-                activeEditId=null;document.getElementById('btn-save-workout').innerText="RECORD WORKOUT SESSION";
-            }else{
-                appData.logs.push({id:Date.now(),date:e,part:currentCategory,exercise:t,sets:a,isPRUpdate:o,memo:n,isDumbbell:dbMult});
-            }
-            localStorage.setItem('trainwise_core_database', JSON.stringify(appData));
+            let db=isDumbbellExercise(t),maxRM=Math.round(Math.max(...a.map(t=>t.w*(1+t.r/40)))),pb=appData.personalBests[t]||0,isPR=false;
+            if(pb===0||maxRM>pb){isPR=true;appData.personalBests[t]=maxRM;setTimeout(()=>{triggerConfetti();alert(`🎉 自己ベスト更新!! +${pb===0?maxRM:(maxRM-pb)}kg 達成: ${maxRM}kg 🔥`);},300);}
+            if(activeEditId!==null){let i=appData.logs.findIndex(t=>t.id===activeEditId);if(i!==-1){appData.logs[i].date=e;appData.logs[i].sets=a;appData.logs[i].exercise=t;appData.logs[i].part=currentCategory;appData.logs[i].isPRUpdate=isPR;appData.logs[i].memo=n;appData.logs[i].isDumbbell=db;}activeEditId=null;document.getElementById('btn-save-workout').innerText="RECORD WORKOUT SESSION";}
+            else{appData.logs.push({id:Date.now(),date:e,part:currentCategory,exercise:t,sets:a,isPRUpdate:isPR,memo:n,isDumbbell:db});}
+            localStorage.setItem('trainwise_core_database',JSON.stringify(appData));
             document.getElementById('log-memo-input').value='';currentSetCount=5;renderSetInputs();renderCalendar();switchTab('dash');
         }
         function renderLogList(){
@@ -224,10 +198,8 @@
             const e=[...appData.logs].sort((t,e)=>new Date(e.date)-new Date(t.date));
             if(e.length===0){t.innerHTML='<p class="text-xs text-gray-600 text-center py-4">履歴なし</p>';return;}
             e.forEach(e=>{
-                let n=e.sets.map((t,n)=>`${n+1}:${t.w}k×${t.r}`).join('|');
-                let mult = e.isDumbbell ? 2 : 1;
-                let totalV = e.sets.reduce((t,n)=>t+(n.w*n.r*mult),0);
-                t.innerHTML+=`<div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs"><div class="truncate flex-1 pr-2"><div class="flex items-center justify-between mb-0.5"><div><span class="font-mono text-gray-500 font-bold mr-1">${e.date.substring(5)}</span><span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[10px] font-black mr-1">${e.part}</span><span class="text-white font-bold truncate text-sm">${e.exercise}</span></div><span class="text-[#0aadc7] font-mono text-xs">Vol: ${totalV}kg</span></div><p class="text-[11px] text-gray-400 font-mono truncate">${n}${e.isDumbbell?' (両手分換算)':''}</p></div><div class="flex space-x-1 shrink-0"><button onclick="startEditLog(${e.id})" class="px-2 py-1 rounded bg-blue-950 text-blue-400 text-[10px] font-bold">修正</button><button onclick="deleteLog(${e.id})" class="px-2 py-1 rounded bg-red-950 text-red-400 text-[10px] font-bold">削除</button></div></div>`;
+                let n=e.sets.map((t,n)=>`${n+1}:${t.w}k×${t.r}`).join('|'),mult=e.isDumbbell?2:1,tv=e.sets.reduce((t,n)=>t+(n.w*n.r*mult),0);
+                t.innerHTML+=`<div class="bg-black/40 p-3 rounded-xl border border-gray-900 flex justify-between items-center text-xs mb-2"><div class="truncate flex-1 pr-2"><div class="flex items-center justify-between mb-1"><div><span class="font-mono text-gray-500 font-bold mr-1">${e.date.substring(5)}</span><span class="px-1.5 py-0.2 rounded bg-gray-900 text-[#0aadc7] text-[9px] font-black mr-1">${e.part}</span><span class="text-white font-bold truncate text-sm">${e.exercise}</span></div><span class="text-[#0aadc7] font-mono text-xs">Vol: ${tv}kg</span></div><p class="text-xs text-gray-400 font-mono truncate">${n}${e.isDumbbell?' (x2)':''}</p></div><div class="flex space-x-1 shrink-0"><button onclick="startEditLog(${e.id})" class="px-2 py-1 rounded bg-blue-950 text-blue-400 text-[10px] font-bold">修正</button><button onclick="deleteLog(${e.id})" class="px-2 py-1 rounded bg-red-950 text-red-400 text-[10px] font-bold">削除</button></div></div>`;
             });
         }
         function startEditLog(t){
@@ -236,46 +208,35 @@
             document.getElementById('log-exercise').value=e.exercise;document.getElementById('log-date-picker').value=e.date;document.getElementById('log-memo-input').value=e.memo||'';
             currentSetCount=Math.max(5,e.sets.length);renderSetInputs();
             e.sets.forEach((t,e)=>{if(document.getElementById(`weight-${e+1}`))document.getElementById(`weight-${e+1}`).value=t.w;if(document.getElementById(`rep-${e+1}`))document.getElementById(`rep-${e+1}`).value=t.r;});
-            document.getElementById('btn-save-workout').innerText="修正内容で確定保存";
+            document.getElementById('btn-save-workout').innerText="修正を保存";
         }
-        function deleteLog(t){if(!confirm('削除しますか？'))return;appData.logs=appData.logs.filter(e=>e.id!==t);localStorage.setItem('trainwise_core_database', JSON.stringify(appData));renderLogList();renderCalendar();updateCharts(currentFilterPart);document.getElementById('selected-day-log-box').classList.add('hidden');}
-        let vChart,rChart;
-        const baseOptions={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#111'},ticks:{color:'#444',font:{size:9}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:10}}}}};
+        function deleteLog(t){if(!confirm('削除？'))return;appData.logs=appData.logs.filter(e=>e.id!==t);localStorage.setItem('trainwise_core_database',JSON.stringify(appData));renderLogList();renderCalendar();updateCharts(currentFilterPart);document.getElementById('selected-day-log-box').classList.add('hidden');}
+        let vC,rC;const opt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#111'},ticks:{color:'#444',font:{size:9}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:10}}}}};
         function initCharts(){
-            vChart=new Chart(document.getElementById('volumeChart').getContext('2d'),{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#00ffff',borderRadius:4}]},options:baseOptions});
-            rChart=new Chart(document.getElementById('rmChart').getContext('2d'),{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#ff007f',tension:0.2,fill:false}]},options:baseOptions});
+            vC=new Chart(document.getElementById('volumeChart').getContext('2d'),{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#00ffff',borderRadius:4}]},options:opt});
+            rC=new Chart(document.getElementById('rmChart').getContext('2d'),{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#ff007f',tension:0.2,fill:false}]},options:opt});
             updateCharts('ALL');
         }
-        function updatePeriod(t){currentFilterPeriod=t;['ALL','6M','3M','1M'].forEach(e=>{const n=document.getElementById(`f-per-${e}`);if(n)n.className=e===t?"px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400";});updateCharts(currentFilterPart);}
+        function updatePeriod(t){currentFilterPeriod=t;['ALL','6M','3M','1M'].forEach(e=>{const btn=document.getElementById(`f-per-${e}`);if(btn)btn.className=e===t?"px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400";});updateCharts(currentFilterPart);}
         function updateCharts(t){
-            currentFilterPart=t;
-            ['胸','背中','脚','肩','腕','お尻','腹筋','ALL'].forEach(e=>{const n=document.getElementById(`f-part-${e}`);if(n)n.className=e===t?"px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400";});
-            const e=new Date();let n=new Date(0);
-            if(currentFilterPeriod==='1M')n=new Date(e.setMonth(e.getMonth()-1));else if(currentFilterPeriod==='3M')n=new Date(e.setMonth(e.getMonth()-3));else if(currentFilterPeriod==='6M')n=new Date(e.setMonth(e.getMonth()-6));
-            let a=appData.logs.filter(t=>new Date(t.date)>=n).sort((t,e)=>new Date(t.date)-new Date(e.date));
-            if(t!=='ALL')a=a.filter(e=>e.part===t);
-            let d={},c=[],o=[];
-            a.forEach(t=>{
-                let e=t.isDumbbell?2:1,n=t.sets.reduce((t,n)=>t+(n.w*n.r*e),0);d[t.date]=(d[t.date]||0)+n;
-                let a=Math.max(...t.sets.map(t=>t.w*(1+t.r/40)));c.push(t.date.substring(5));o.push(Math.round(a));
-            });
-            if(vChart){vChart.data.labels=Object.keys(d).map(t=>t.substring(5));vChart.data.datasets[0].data=Object.values(d);vChart.update();}
-            if(rChart){rChart.data.labels=c;rChart.data.datasets[0].data=o;rChart.update();}
-            document.getElementById('vol-graph-title').innerText=`${t} VOLUME TREND (${currentFilterPeriod})`;document.getElementById('rm-graph-title').innerText=`${t} 1RM TREND (${currentFilterPeriod})`;
+            currentFilterPart=t;['胸','背中','脚','肩','腕','お尻','腹筋','ALL'].forEach(e=>{const b=document.getElementById(`f-part-${e}`);if(b)b.className=e===t?"px-2.5 py-1 rounded-md text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400";});
+            const d=new Date();let lim=new Date(0);if(currentFilterPeriod==='1M')lim=new Date(d.setMonth(d.getMonth()-1));else if(currentFilterPeriod==='3M')lim=new Date(d.setMonth(d.getMonth()-3));else if(currentFilterPeriod==='6M')lim=new Date(d.setMonth(d.getMonth()-6));
+            let f=appData.logs.filter(t=>new Date(t.date)>=lim).sort((t,e)=>new Date(t.date)-new Date(e.date));
+            if(t!=='ALL')f=f.filter(e=>e.part===t);
+            let vm={},lbl=[],val=[];f.forEach(t=>{let m=t.isDumbbell?2:1,v=t.sets.reduce((t,n)=>t+(n.w*n.r*m),0);vm[t.date]=(vm[t.date]||0)+v;let mx=Math.max(...t.sets.map(t=>t.w*(1+t.r/40)));lbl.push(t.date.substring(5));val.push(Math.round(mx));});
+            if(vC){vC.data.labels=Object.keys(vm).map(t=>t.substring(5));vC.data.datasets[0].data=Object.values(vm);vC.update();}
+            if(rC){rC.data.labels=lbl;rC.data.datasets[0].data=val;rC.update();}
+            document.getElementById('vol-graph-title').innerText=`${t} VOLUME (${currentFilterPeriod})`;document.getElementById('rm-graph-title').innerText=`${t} 1RM (${currentFilterPeriod})`;
         }
-        function saveApiKey(){const t=document.getElementById('gemini-key-input').value.trim();if(!t)return alert('入力してください');localStorage.setItem('trainwise_final_key',t);document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>';}
+        function saveApiKey(){const t=document.getElementById('gemini-key-input').value.trim();if(!t)return;localStorage.setItem('trainwise_final_key',t);document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI ON</p>';}
         async function sendMessage(){
             const t=document.getElementById('chat-input'),e=document.getElementById('chat-box'),n=t.value.trim();if(!n)return;
             e.innerHTML+=`<div class="bg-[#0aadc7]/10 border border-[#0aadc7]/30 p-3 rounded-2xl max-w-[88%] ml-auto text-right text-white font-medium">${n}</div>`;t.value='';e.scrollTop=e.scrollHeight;
-            const a=localStorage.getItem('trainwise_final_key');if(!a){setTimeout(() => {e.innerHTML+='<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl max-w-[88%] text-xs">APIキーを設定してください。</div>';e.scrollTop=e.scrollHeight;},800);return;}
-            const d='loading-'+Date.now();e.innerHTML+=`<div id="${d}" class="text-gray-500 italic p-2 animate-pulse">Gemini思考中...</div>`;e.scrollTop=e.scrollHeight;
-            try{
-                const c=JSON.stringify(appData.logs),o=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`ユーザーログ: ${c}。質問:「${n}」に専門的アドバイスを簡潔に回答してください。日本語で。`}]}]})}),r=await o.json();document.getElementById(d).remove();
-                e.innerHTML+=`<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${r.candidates[0].content.parts[0].text.replace(/\n/g,'<br>')}</div>`;
-            }catch(t){if(document.getElementById(d))document.getElementById(d).remove();e.innerHTML+='<div class="text-red-500 p-2">通信エラー。</div>';}
-            e.scrollTop=e.scrollHeight;
+            const a=localStorage.getItem('trainwise_final_key');if(!a){setTimeout(()=>{e.innerHTML+='<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-xs">Key未設定</div>';e.scrollTop=e.scrollHeight;},600);return;}
+            const id='loading-'+Date.now();e.innerHTML+=`<div id="${id}" class="text-gray-500 italic p-2 animate-pulse">Thinking...</div>`;e.scrollTop=e.scrollHeight;
+            try{const c=JSON.stringify(appData.logs),o=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`Log: ${c}. Q: ${n}.`}]}]})}),r=await o.json();document.getElementById(id).remove();e.innerHTML+=`<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${r.candidates[0].content.parts[0].text.replace(/\n/g,'<br>')}</div>`;}catch(t){if(document.getElementById(id))document.getElementById(id).remove();e.innerHTML+='<div class="text-red-500 p-2">Error</div>';}e.scrollTop=e.scrollHeight;
         }
-        window.onload=()=>{setDefaultLogDate();renderCategorySelector();selectCategory('胸');renderSetInputs();initCharts();renderLogList();renderCalendar();if(localStorage.getItem('trainwise_final_key'))document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI 接続完了</p>';};
+        window.onload=()=>{setDefaultLogDate();renderCategorySelector();selectCategory('胸');renderSetInputs();initCharts();renderLogList();renderCalendar();if(localStorage.getItem('trainwise_final_key'))document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI ON</p>';};
     </script>
 </body>
 </html>
