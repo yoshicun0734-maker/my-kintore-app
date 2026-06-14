@@ -11,11 +11,9 @@
         .card-dark{background:#0c0f17;border:1px solid #1a202c;}
         .active-tab{color:#0aadc7;font-weight:900;}
         *{ -webkit-tap-highlight-color:transparent;}
-        /* 下部余白を120pxに拡大し、メニューとの被りを完全に解消 */
         .scroll-container{overflow-y:auto;height:calc(100vh - 160px);padding-bottom:120px;}
         .confetti{position:fixed;width:8px;height:8px;z-index:999;animation:fall linear forwards;}
         @keyframes fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
-        /* メニューの背景をさらに高級感のある透過ブラックに */
         .nav-glass{background:rgba(10,10,10,0.9);backdrop-filter:blur(15px);border-top:1px solid rgba(255,255,255,0.1);}
     </style>
 </head>
@@ -55,13 +53,27 @@
                 <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📅 トレーニング実施日</label><input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none font-mono font-bold"></div>
                 <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. 対象部位</label><div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div></div>
                 <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">2. ワークアウト種目</label><select id="log-exercise" onchange="updatePreviousStats()" class="w-full bg-black border border-gray-800 rounded-xl p-3.5 text-sm text-white focus:outline-none font-bold"></select></div>
-                <div class="space-y-2">
-                    <div class="grid grid-cols-2 gap-3 bg-black p-3 rounded-xl border border-gray-900 text-center">
-                        <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀ 前回実績</span><span id="stat-prev" class="text-sm font-mono font-bold text-[#0aadc7]">なし</span></div>
-                        <div><span class="block text-[10px] text-gray-500 font-bold mb-0.5">◀◀ 前々回実績</span><span id="stat-prev2" class="text-sm font-mono font-bold text-gray-400">なし</span></div>
+                
+                <div class="space-y-2.5">
+                    <div class="bg-black rounded-xl border border-gray-900 p-3.5 space-y-2.5">
+                        <div class="flex items-center justify-between border-b border-gray-900/60 pb-2">
+                            <span class="text-[10px] text-gray-500 font-black uppercase tracking-wider flex items-center">
+                                <svg class="w-3.5 h-3.5 text-amber-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                                過去最大推定 1RM ベスト
+                            </span>
+                            <span id="stat-max-rm" class="text-sm font-mono font-black text-amber-400">なし</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1.5 flex items-center">
+                                <svg class="w-3.5 h-3.5 text-[#0aadc7] mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                前回セッションの全セット記録 <span id="stat-prev-date" class="text-[9px] text-gray-600 ml-1.5 font-mono"></span>
+                            </span>
+                            <div id="stat-prev-sets-box" class="flex flex-wrap gap-1.5 text-xs text-gray-400">なし</div>
+                        </div>
                     </div>
                     <div class="bg-[#0c0f17] border border-dashed border-gray-900 p-2.5 rounded-xl"><span class="block text-[10px] text-[#0aadc7] font-black uppercase mb-1">💡 この種目の直近のメモ</span><p id="live-previous-memo" class="text-sm text-gray-300 italic">なし</p></div>
                 </div>
+
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase"><div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div></div>
                     <div id="set-inputs-container" class="space-y-2"></div>
@@ -103,7 +115,7 @@
             '背中': ['チンニング（順手・ワイドグリップ）','チンニング（順手・ナローグリップ）','チンニング（逆手・ワイドグリップ）','チンニング（逆手・ナローグリップ）','チンニング（パラレルグリップ）','インバーテッドロウ（順手）','インバーテッドロウ（逆手）','バックエクステンション（床での背筋運動）','リバースプッシュアップ（背中意識）','バーベル・デッドリフト','ダンベル・デッドリフト','バーベル・ベントオーバーロウ（順手）','バーベル・ベントオーバーロウ（逆手）','ダンベル・ベントオーバーロウ','ワンハンド・ダンベルロウ','ダンベル・プルオーバー','バーベル・Tバーロウ','ラットプルダウン（フロント・ワイドグリップ）','ラットプルダウン（フロント・ナローグリップ）','ラットプルダウン（ビハインドネック）','ラットプルダウン（パラレルグリップ）','シーテッド・ケーブルロウ（ワイド）','シーテッド・ケーブルロウ（ナロー）','シーテッド・マシンロウ','アシスト・チンニング','バックエクステンション（ベンチ）','ストレートアーム・ケーブルプルダウン'],
             '胸': ['ノーマル・プッシュアップ（通常の腕立て伏せ）','ワイド・プッシュアップ','ナロー・プッシュアップ','インクライン・プッシュアップ','デクライン・プッシュアップ','ディップス（大胸筋下部狙い）','フラット・バーベルベンチプレス','インクライン・バーベルベンチプレス','デクライン・バーベルベンチプレス','フラット・ダンベルプレス','インクライン・ダンベルプレス','デクライン・ダンベルプレス','フラット・ダンベルフライ','インクライン・ダンベルフライ','デクライン・ダンベルフライ','ダンベル・フロアプレス','チェストプレス・マシン（フラット）','インクライン・チェストプレス・マシン','デクライン・チェストプレス・マシン','ペックフライ・マシン','ケーブル・クロスオーバー（高位置）','ケーブル・クロスオーバー（低位置）','ケーブル・チェストプレス','スミスマシン・フラットベンチプレス','スミスマシン・インクラインベンチプレス','スミスマシン・デクラインベンチプレス'],
             '脚': ['ノーマル・スクワット（自重）','ワイド・スクワット','ナロー・スクワット','フォワード・ランジ','バック・ランジ','サイド・ランジ','ウォーキング・ランジ','ブルガリアンスクワット（自重）','ピストルスクワット','スタンディング・カーフレイズ','シングルレッグ・カーフレイズ','バーベル・バックスクワット','バーベル・フロントスクワット','ダンベル・スクワット','ダンベル・ゴブレットスクワット','バーベル・フォワードランジ','バーベル・バックランジ','ダンベル・フォワードランジ','ダンベル・バックランジ','バーベル・ウォーキングランジ','ダンベル・ウォーキングランジ','バーベル・ブルガリアンスクワット','ダンベル・ブルガリアンスクワット','バーベル・ルーマニアンデッドリフト','ダンベル・ルーマニアンデッドリフト','バーベル・カーフレイズ','ダンベル・カーフレイズ','レッグプレス・マシン','ハックスクワット・マシン','レッグエクステンション・マシン','シーテッド・レッグカール・マシン','ライイング・レッグカール・マシン','アブダクション・マシン','アダクション・マシン','スミスマシン・スクワット','スミスマシン・ランジ','スミスマシン・ブルガリアンスクワット','シーテッド・カーフレイズ・マシン'],
-            '腕': ['チンニング（逆手・ナロー）','バーベル・バイセップスカール','EZバー・バイセップスカール','フラット・ダンベルバイセップスカール','インクライン・ダンベルバイセップスカール','ダンベル・ハンマーカール','インクライン・ダンベルハンマーカール','ダンベル・コンセントレーションカール','バーベル・プリチャーカール','EZバー・プリチャーカール','ダンベル・プリチャーカール','ケーブル・バイセップスカール','バイセップスカール・マシン','ダイヤモンド・プッシュアップ','リバース・プッシュアップ','ディップス（二の腕狙い）','バーベル・ライイングトリセプスエクステンション','EZバー・ライイングトリセプスエクステンション','ダンベル・ライイングトリセプスエクステンション','ダンベル・キキバック','ダンベル・ダブルアームキックバック','バーベル・フレンチプレス','EZバー・フレンチプレス','ワンハンド・ダンベルフレンチプレス','ツーハンド・ダンベルフレンチプレス','ケーブル・プレスダウン（ストレート）','ケーブル・プレスダウン（ロープ）','ケーブル・オーバーヘッドトリセップスエクステンション','ディップス・マシン','バーベル・リストカール','ダンベル・リストカール','バーベル・リバースリストカール','ダンベル・リバースリストカール','バーベル・リバースバイセップスカール'],
+            '腕': ['チンニング（逆手・ナロー）','バーベル・バイセップスカール','EZバー・バイセップスカール','フラット・ダンベルバイセップスカール','インクライン・ダンベルバイセップスカール','ダンベル・ハンマーカール','インクライン・ダンベルハンマーカール','ダンベル・コンセントレーションカール','バーベル・プリチャーカール','EZバー・プリチャーカール','ダンベル・プリチャーカール','ケーブル・バイセップスカール','バイセップスカール・マシン','ダイヤモンド・プッシュアップ','リバース・プッシュアップ','ディップス（二の腕狙い）','バーベル・ライイングトリセプスエクステンション','EZバー・ライイングトリセプスエクステンション','ダンベル・ライイングトリセプスエクステンション','ダンベル・キックバック','ダンベル・ダブルアームキックバック','バーベル・フレンチプレス','EZバー・フレンチプレス','ワンハンド・ダンベルフレンチプレス','ツーハンド・ダンベルフレンチプレス','ケーブル・プレスダウン（ストレート）','ケーブル・プレスダウン（ロープ）','ケーブル・オーバーヘッドトリセップスエクステンション','ディップス・マシン','バーベル・リストカール','ダンベル・リストカール','バーベル・リバースリストカール','ダンベル・リバースリストカール','バーベル・リバースバイセップスカール'],
             '肩': ['パイク・プッシュアップ','ハンドスタンド・プッシュアップ','バーベル・ショルダープレス','バーベル・シーテッドショルダープレス','ダンベル・ショルダープレス','ダンベル・シーテッドショルダープレス','アーノルド・プレス','ダンベル・サイドレイズ','ダンベル・シーテッドサイドレイズ','インクライン・ダンベルサイドレイズ','ダンベル・フロントレイズ','バーベル・フロントレイズ','プレート・フロントレイズ','ダンベル・ベントオーバーリアレイズ','ダンベル・シーテッドリアレイズ','インクライン・ダンベルリアレイズ','バーベル・アップライトロウ','ダンベル・アップライトロウ','ショルダープレス・マシン','ケーブル・サイドレイズ','ケーブル・フロントレイズ','ケーブル・リアレイズ','ペックフライ・マシン（リアデルト）','スミスマシン・ショルダープレス'],
             'お尻': ['ヒップリフト','ワンレッグ・ヒップリフト','ドンキーキック','ファイヤーハイドラント','クラムシェル','バーベル・ヒップスラスト','ダンベル・ヒップスラスト','バーベル・ワイドスタンススクワット','ダンベル・ワイドスタンススクワット','バーベル・ブルガリアンスクワット（尻）','ダンベル・ブルガリアンスクワット（尻）','バーベル・スティフレッグドデッドリフト','ダンベル・スティフレッグドデッドリフト','ヒップスラスト・マシン','アブダクション・マシン（尻上部）','ケーブル・キックバック','マルチヒップ・マシン'],
             '腹筋': ['ノーマル・クランチ','レッグレイズ','リバース・クランチ','ツイスト・クランチ','バイシクル・クランチ','プランク','サイド・プランク','Vシットアップ','ハンギング・レッグレイズ','ハンギング・ニーレイズ','加重クランチ','ダンベル・サイドベント','バーベル・ツイスト','アブドミナルクランチ','ケーブル・クランチ','ケーブル・ウッドチョッパー','ケーブル・リバースウッドチョッパー','ロータリートルソー','アブローラー（膝コロ）','アブローラー（立ちコロ）']
@@ -122,7 +134,7 @@
             const act = document.getElementById(`nav-${t}`);
             if(act){act.className="flex-1 flex flex-col items-center text-[10px] font-bold active-tab";act.querySelector('svg').style.strokeWidth="2.5px";}
             if(t==='dash'){renderLogList();updateCharts(currentFilterPart);}
-            if(t==='log'&&activeEditId===null){setDefaultLogDate();document.getElementById('log-memo-input').value='';}
+            if(t==='log'&&activeEditId===null){setDefaultLogDate();document.getElementById('log-memo-input').value='';updatePreviousStats();}
             if(t==='memos')renderMemoTimeline();
         }
         function renderCalendar(){
@@ -164,13 +176,36 @@
         function selectCategory(t){currentCategory=t;renderCategorySelector();const e=document.getElementById('log-exercise');e.innerHTML='';exerciseMaster[t].forEach(t=>e.innerHTML+=`<option value="${t}">${t}</option>`);updatePreviousStats();}
         function renderSetInputs(){const t=document.getElementById('set-inputs-container');t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`;}}
         function addNewSetRow(){currentSetCount++;renderSetInputs();}
+        
+        // 最大RMと全セット履歴の出力ロジック
         function updatePreviousStats(){
-            const t=document.getElementById('log-exercise').value,e=appData.logs.filter(e=>e.exercise===t).sort((t,e)=>new Date(e.date)-new Date(t.date));
-            if(document.getElementById('stat-prev'))document.getElementById('stat-prev').innerText=e[0]?`${e[0].sets[0].w}kg/${e[0].sets[0].r}r`:'なし';
-            if(document.getElementById('stat-prev2'))document.getElementById('stat-prev2').innerText=e[1]?`${e[1].sets[0].w}kg/${e[1].sets[0].r}r`:'なし';
-            const n=e.find(t=>t.memo&&t.memo.trim()!=='');
-            if(document.getElementById('live-previous-memo'))document.getElementById('live-previous-memo').innerText=n?`[${n.date}] ${n.memo}`:'なし';
+            const exName=document.getElementById('log-exercise').value;
+            const history=appData.logs.filter(e=>e.exercise===exName).sort((t,e)=>new Date(e.date)-new Date(t.date));
+            
+            // 1. 過去最高RMの表示
+            const bestRM = appData.personalBests[exName] || 0;
+            document.getElementById('stat-max-rm').innerText = bestRM > 0 ? `${bestRM} kg` : 'なし';
+            
+            // 2. 前回の全セット表示
+            const prevBox = document.getElementById('stat-prev-sets-box');
+            const prevDateSpan = document.getElementById('stat-prev-date');
+            prevBox.innerHTML = '';
+            
+            if(history[0]) {
+                prevDateSpan.innerText = `(${history[0].date.substring(5)})`;
+                history[0].sets.forEach((set, idx) => {
+                    prevBox.innerHTML += `<span class="bg-gray-900 border border-gray-800 px-2 py-0.5 rounded font-mono text-[11px] text-gray-300">${idx+1}枠:${set.w}k×${set.r}</span>`;
+                });
+            } else {
+                prevDateSpan.innerText = '';
+                prevBox.innerHTML = '<span class="text-gray-600 italic">なし</span>';
+            }
+            
+            // 3. 直近メモの同期
+            const memoLog=history.find(t=>t.memo&&t.memo.trim()!=='');
+            if(document.getElementById('live-previous-memo'))document.getElementById('live-previous-memo').innerText=memoLog?`[${memoLog.date}] ${memoLog.memo}`:'なし';
         }
+
         function renderMemoTimeline(){
             const t=document.getElementById('memo-timeline-container');t.innerHTML='';
             const e=appData.logs.filter(t=>t.memo&&t.memo.trim()!=='').sort((t,e)=>new Date(e.date)-new Date(t.date));
