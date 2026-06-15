@@ -23,9 +23,7 @@
             <h1 class="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#0aadc7] to-[#81e6d9]">TRAINWISE AI</h1>
             <p class="text-[10px] text-gray-500 font-mono mt-0.5">PREMIUM WORKOUT ARCHITECT</p>
         </div>
-        <button onclick="switchTab('chat')" class="w-10 h-10 rounded-full border border-[#0aadc7]/30 bg-gradient-to-tr from-[#0c0f17] to-[#121c2c] flex items-center justify-center shadow-lg active:scale-90 transition-all">
-            <svg class="w-4 h-4 text-[#0aadc7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        </button>
+        <button onclick="switchTab('chat')" class="w-10 h-10 rounded-full border border-[#0aadc7]/30 bg-gradient-to-tr from-[#0c0f17] to-[#121c2c] flex items-center justify-center shadow-lg active:scale-90 transition-all"><svg class="w-4 h-4 text-[#0aadc7]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></button>
     </header>
     <main class="flex-1 mt-[82px] px-5 scroll-container text-sm">
         <section class="mb-6 pt-3 bg-[#0c0f17]/40 p-4 rounded-2xl border border-gray-900">
@@ -53,33 +51,25 @@
                 <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📅 トレーニング実施日</label><input type="date" id="log-date-picker" class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none font-mono font-bold"></div>
                 <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">1. 対象部位</label><div class="grid grid-cols-4 gap-1.5" id="category-selector-grid"></div></div>
                 <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wide">2. ワークアウト種目</label><select id="log-exercise" onchange="updatePreviousStats()" class="w-full bg-black border border-gray-800 rounded-xl p-3.5 text-sm text-white focus:outline-none font-bold"></select></div>
-                
                 <div class="space-y-2.5">
                     <div class="bg-black rounded-xl border border-gray-900 p-3.5 space-y-2.5">
                         <div class="flex items-center justify-between border-b border-gray-900/60 pb-2">
-                            <span class="text-[10px] text-gray-500 font-black uppercase tracking-wider flex items-center">
-                                <svg class="w-3.5 h-3.5 text-amber-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                                過去最大推定 1RM ベスト
-                            </span>
+                            <span class="text-[10px] text-gray-500 font-black uppercase tracking-wider flex items-center"><svg class="w-3.5 h-3.5 text-amber-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>過去最大推定 1RM ベスト</span>
                             <span id="stat-max-rm" class="text-sm font-mono font-black text-amber-400">なし</span>
                         </div>
                         <div>
-                            <span class="block text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1.5 flex items-center">
-                                <svg class="w-3.5 h-3.5 text-[#0aadc7] mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                                前回セッションの全セット記録 <span id="stat-prev-date" class="text-[9px] text-gray-600 ml-1.5 font-mono"></span>
-                            </span>
+                            <span class="block text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1.5 flex items-center"><svg class="w-3.5 h-3.5 text-[#0aadc7] mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>前回セッションの全セット記録 <span id="stat-prev-date" class="text-[9px] text-gray-600 ml-1.5 font-mono"></span></span>
                             <div id="stat-prev-sets-box" class="flex flex-wrap gap-1.5 text-xs text-gray-400">なし</div>
                         </div>
                     </div>
                     <div class="bg-[#0c0f17] border border-dashed border-gray-900 p-2.5 rounded-xl"><span class="block text-[10px] text-[#0aadc7] font-black uppercase mb-1">💡 この種目の直近のメモ</span><p id="live-previous-memo" class="text-sm text-gray-300 italic">なし</p></div>
                 </div>
-
                 <div class="space-y-3">
                     <div class="grid grid-cols-3 gap-2 text-center text-[10px] font-bold text-gray-500 uppercase"><div>セット</div><div>重量 (kg)</div><div>回数 (レップ)</div></div>
                     <div id="set-inputs-container" class="space-y-2"></div>
                     <button onclick="addNewSetRow()" class="w-full py-3 bg-gray-950 border border-dashed border-gray-800 rounded-xl text-xs text-[#0aadc7] font-bold mt-1">＋ セットを追加</button>
                 </div>
-                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📝 今回のメモ・気づき</label><textarea id="log-memo-input" rows="2" placeholder="気づきを入力..." class="w-full bg-black border border-gray-800 rounded-xl p-3 text-sm text-white focus:outline-none resize-none font-medium"></textarea></div>
+                <div><label class="block text-xs font-bold text-gray-400 mb-1.5 uppercase tracking-wide">📝 今回のメモ・気づき</label><textarea id="log-memo-input" rows="2" placeholder="気づきを入力..." class="w-full bg-black border border-gray-800 rounded-xl p-3 text-xs text-white focus:outline-none resize-none font-medium"></textarea></div>
                 <button onclick="saveLog()" id="btn-save-workout" class="w-full bg-[#0aadc7] text-black font-black py-4 rounded-xl text-sm active:scale-95 transition-all">RECORD WORKOUT SESSION</button>
             </div>
         </div>
@@ -88,27 +78,15 @@
         </div>
         <div id="content-chat" class="hidden flex flex-col h-[60vh] justify-between">
             <div id="api-key-panel" class="bg-amber-950/20 border border-amber-500/30 p-3 rounded-xl text-center text-xs space-y-2 mb-3"><p class="text-amber-400 font-bold">⚠️ Geminiチャットを有効化</p><div class="flex space-x-1"><input type="password" id="gemini-key-input" placeholder="API Keyを入力..." class="flex-1 bg-black border border-gray-800 rounded p-1.5 text-center font-mono text-white text-[11px]"><button onclick="saveApiKey()" class="bg-amber-500 text-black px-3 font-bold rounded text-[11px]">有効化</button></div></div>
-            <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2"><div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl">AI Coach Agent: リアルタイム分析します！</div></div>
+            <div id="chat-box" class="flex-1 overflow-y-auto space-y-4 p-1 text-xs pr-2"><div class="bg-[#0c0f17] border border-[#0aadc7]/20 p-3.5 rounded-2xl">AI Coach Agent: リアルタイム analysis します！</div></div>
             <div class="flex space-x-2 mt-4 bg-[#0c0f17] p-2 rounded-xl border border-gray-900"><input type="text" id="chat-input" placeholder="AIトレーナーに相談..." class="flex-1 bg-transparent px-2 text-sm text-white focus:outline-none"><button onclick="sendMessage()" class="bg-[#0aadc7] text-black px-4 py-2 rounded-lg font-black text-xs active:scale-95 transition-all">ASK</button></div>
         </div>
     </main>
     <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto nav-glass z-50 flex justify-around items-center pt-3 pb-8 text-center">
-        <button onclick="switchTab('dash')" id="nav-dash" class="flex-1 flex flex-col items-center text-[10px] font-bold active-tab">
-            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
-            <span>分析</span>
-        </button>
-        <button onclick="switchTab('log')" id="nav-log" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500">
-            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-            <span>記録</span>
-        </button>
-        <button onclick="switchTab('memos')" id="nav-memos" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500">
-            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-            <span>メモ</span>
-        </button>
-        <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500">
-            <svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-            <span>AI相談</span>
-        </button>
+        <button onclick="switchTab('dash')" id="nav-dash" class="flex-1 flex flex-col items-center text-[10px] font-bold active-tab"><svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg><span>分析</span></button>
+        <button onclick="switchTab('log')" id="nav-log" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500"><svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span>記録</span></button>
+        <button onclick="switchTab('memos')" id="nav-memos" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500"><svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg><span>メモ</span></button>
+        <button onclick="switchTab('chat')" id="nav-chat" class="flex-1 flex flex-col items-center text-[10px] font-bold text-gray-500"><svg class="w-6 h-6 mb-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span>AI相談</span></button>
     </nav>
     <script>
         const exerciseMaster = {
@@ -120,7 +98,8 @@
             'お尻': ['ヒップリフト','ワンレッグ・ヒップリフト','ドンキーキック','ファイヤーハイドラント','クラムシェル','バーベル・ヒップスラスト','ダンベル・ヒップスラスト','バーベル・ワイドスタンススクワット','ダンベル・ワイドスタンススクワット','バーベル・ブルガリアンスクワット（尻）','ダンベル・ブルガリアンスクワット（尻）','バーベル・スティフレッグドデッドリフト','ダンベル・スティフレッグドデッドリフト','ヒップスラスト・マシン','アブダクション・マシン（尻上部）','ケーブル・キックバック','マルチヒップ・マシン'],
             '腹筋': ['ノーマル・クランチ','レッグレイズ','リバース・クランチ','ツイスト・クランチ','バイシクル・クランチ','プランク','サイド・プランク','Vシットアップ','ハンギング・レッグレイズ','ハンギング・ニーレイズ','加重クランチ','ダンベル・サイドベント','バーベル・ツイスト','アブドミナルクランチ','ケーブル・クランチ','ケーブル・ウッドチョッパー','ケーブル・リバースウッドチョッパー','ロータリートルソー','アブローラー（膝コロ）','アブローラー（立ちコロ）']
         };
-        let currentCategory='胸',currentFilterPart='ALL',currentFilterPeriod='ALL',activeEditId=null,calendarYear=2026,calendarMonth=4,currentSetCount=5;
+        const initNow = new Date();
+        let currentCategory='胸',currentFilterPart='ALL',currentFilterPeriod='ALL',activeEditId=null,calendarYear=initNow.getFullYear(),calendarMonth=initNow.getMonth(),currentSetCount=5;
         let appData=JSON.parse(localStorage.getItem('trainwise_core_database'))||{logs:[],personalBests:{}};
         function setDefaultLogDate(){const t=new Date().toISOString().split('T')[0];if(document.getElementById('log-date-picker'))document.getElementById('log-date-picker').value=t;}
         function isDumbbellExercise(t){return t.includes('ダンベル')||t.includes('ワンハンド');}
@@ -176,21 +155,14 @@
         function selectCategory(t){currentCategory=t;renderCategorySelector();const e=document.getElementById('log-exercise');e.innerHTML='';exerciseMaster[t].forEach(t=>e.innerHTML+=`<option value="${t}">${t}</option>`);updatePreviousStats();}
         function renderSetInputs(){const t=document.getElementById('set-inputs-container');t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`;}}
         function addNewSetRow(){currentSetCount++;renderSetInputs();}
-        
-        // 最大RMと全セット履歴の出力ロジック
         function updatePreviousStats(){
             const exName=document.getElementById('log-exercise').value;
             const history=appData.logs.filter(e=>e.exercise===exName).sort((t,e)=>new Date(e.date)-new Date(t.date));
-            
-            // 1. 過去最高RMの表示
             const bestRM = appData.personalBests[exName] || 0;
             document.getElementById('stat-max-rm').innerText = bestRM > 0 ? `${bestRM} kg` : 'なし';
-            
-            // 2. 前回の全セット表示
             const prevBox = document.getElementById('stat-prev-sets-box');
             const prevDateSpan = document.getElementById('stat-prev-date');
             prevBox.innerHTML = '';
-            
             if(history[0]) {
                 prevDateSpan.innerText = `(${history[0].date.substring(5)})`;
                 history[0].sets.forEach((set, idx) => {
@@ -200,12 +172,9 @@
                 prevDateSpan.innerText = '';
                 prevBox.innerHTML = '<span class="text-gray-600 italic">なし</span>';
             }
-            
-            // 3. 直近メモの同期
             const memoLog=history.find(t=>t.memo&&t.memo.trim()!=='');
             if(document.getElementById('live-previous-memo'))document.getElementById('live-previous-memo').innerText=memoLog?`[${memoLog.date}] ${memoLog.memo}`:'なし';
         }
-
         function renderMemoTimeline(){
             const t=document.getElementById('memo-timeline-container');t.innerHTML='';
             const e=appData.logs.filter(t=>t.memo&&t.memo.trim()!=='').sort((t,e)=>new Date(e.date)-new Date(t.date));
@@ -221,10 +190,20 @@
             if(!e)return alert('日付を入れてください');
             let a=[];for(let t=1;t<=currentSetCount;t++){let e=parseFloat(document.getElementById(`weight-${t}`).value),n=parseInt(document.getElementById(`rep-${t}`).value);if(e&&n)a.push({w:e,r:n});}
             if(a.length===0)return alert('入力してください');
-            let db=isDumbbellExercise(t),maxRM=Math.round(Math.max(...a.map(t=>t.w*(1+t.r/40)))),pb=appData.personalBests[t]||0,isPR=false;
+            
+            let db=isDumbbellExercise(t);
+            // 🔥 【バグ修正】1RM(最大RM)の計算は、2倍などの倍率を一切無視して、純粋に入力された片手重量とレップ数だけで算出
+            let maxRM=Math.round(Math.max(...a.map(t=>t.w*(1+t.r/40))));
+            let pb=appData.personalBests[t]||0,isPR=false;
             if(pb===0||maxRM>pb){isPR=true;appData.personalBests[t]=maxRM;setTimeout(()=>{triggerConfetti();alert(`🎉 自己ベスト更新!! +${pb===0?maxRM:(maxRM-pb)}kg 達成: ${maxRM}kg 🔥`);},300);}
-            if(activeEditId!==null){let i=appData.logs.findIndex(t=>t.id===activeEditId);if(i!==-1){appData.logs[i].date=e;appData.logs[i].sets=a;appData.logs[i].exercise=t;appData.logs[i].part=currentCategory;appData.logs[i].isPRUpdate=isPR;appData.logs[i].memo=n;appData.logs[i].isDumbbell=db;}activeEditId=null;document.getElementById('btn-save-workout').innerText="RECORD WORKOUT SESSION";}
-            else{appData.logs.push({id:Date.now(),date:e,part:currentCategory,exercise:t,sets:a,isPRUpdate:isPR,memo:n,isDumbbell:db});}
+            
+            if(activeEditId !== null){
+                let idx=appData.logs.findIndex(t=>t.id===activeEditId);
+                if(idx!==-1){appData.logs[idx].date=e;appData.logs[idx].sets=a;appData.logs[idx].exercise=t;appData.logs[idx].part=currentCategory;appData.logs[idx].isPRUpdate=isPR;appData.logs[idx].memo=n;appData.logs[idx].isDumbbell=db;}
+                activeEditId=null;document.getElementById('btn-save-workout').innerText="RECORD WORKOUT SESSION";
+            }else{
+                appData.logs.push({id:Date.now(),date:e,part:currentCategory,exercise:t,sets:a,isPRUpdate:isPR,memo:n,isDumbbell:db});
+            }
             localStorage.setItem('trainwise_core_database',JSON.stringify(appData));
             document.getElementById('log-memo-input').value='';currentSetCount=5;renderSetInputs();renderCalendar();switchTab('dash');
         }
@@ -258,7 +237,9 @@
             const d=new Date();let lim=new Date(0);if(currentFilterPeriod==='1M')lim=new Date(d.setMonth(d.getMonth()-1));else if(currentFilterPeriod==='3M')lim=new Date(d.setMonth(d.getMonth()-3));else if(currentFilterPeriod==='6M')lim=new Date(d.setMonth(d.getMonth()-6));
             let f=appData.logs.filter(t=>new Date(t.date)>=lim).sort((t,e)=>new Date(t.date)-new Date(e.date));
             if(t!=='ALL')f=f.filter(e=>e.part===t);
-            let vm={},lbl=[],val=[];f.forEach(t=>{let m=t.isDumbbell?2:1,v=t.sets.reduce((t,n)=>t+(n.w*n.r*m),0);vm[t.date]=(vm[t.date]||0)+v;let mx=Math.max(...t.sets.map(t=>t.w*(1+t.r/40)));lbl.push(t.date.substring(5));val.push(Math.round(mx));});
+            let vm={},lbl=[],val=[];f.forEach(t=>{let m=t.isDumbbell?2:1,v=t.sets.reduce((t,n)=>t+(n.w*n.r*m),0);vm[t.date]=(vm[t.date]||0)+v;
+            // 🔥 【グラフ側バグ修正】グラフの1RMプロット線も、総ボリュームや2倍に左右されない純粋な片手MAX重量に修正
+            let mx=Math.max(...t.sets.map(t=>t.w*(1+t.r/40)));lbl.push(t.date.substring(5));val.push(Math.round(mx));});
             if(vC){vC.data.labels=Object.keys(vm).map(t=>t.substring(5));vC.data.datasets[0].data=Object.values(vm);vC.update();}
             if(rC){rC.data.labels=lbl;rC.data.datasets[0].data=val;rC.update();}
             document.getElementById('vol-graph-title').innerText=`${t} VOLUME (${currentFilterPeriod})`;document.getElementById('rm-graph-title').innerText=`${t} 1RM (${currentFilterPeriod})`;
@@ -271,7 +252,7 @@
             const id='loading-'+Date.now();e.innerHTML+=`<div id="${id}" class="text-gray-500 italic p-2 animate-pulse">Thinking...</div>`;e.scrollTop=e.scrollHeight;
             try{const c=JSON.stringify(appData.logs),o=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`Log: ${c}. Q: ${n}.`}]}]})}),r=await o.json();document.getElementById(id).remove();e.innerHTML+=`<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${r.candidates[0].content.parts[0].text.replace(/\n/g,'<br>')}</div>`;}catch(t){if(document.getElementById(id))document.getElementById(id).remove();e.innerHTML+='<div class="text-red-500 p-2">Error</div>';}e.scrollTop=e.scrollHeight;
         }
-        window.onload=()=>{setDefaultLogDate();renderCategorySelector();selectCategory('胸');renderSetInputs();initCharts();renderLogList();renderCalendar();if(localStorage.getItem('trainwise_final_key'))document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI ON</p>';};
+        window.onload=()=>{renderCalendar();switchTab('dash');};
     </script>
 </body>
 </html>
