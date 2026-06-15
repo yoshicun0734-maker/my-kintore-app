@@ -58,7 +58,7 @@
                             <span id="stat-max-rm" class="text-sm font-mono font-black text-amber-400">なし</span>
                         </div>
                         <div>
-                            <span class="block text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1.5 flex items-center"><svg class="w-3.5 h-3.5 text-[#0aadc7] mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>前回セッションの全セット記録 <span id="stat-prev-date" class="text-[9px] text-gray-600 ml-1.5 font-mono"></span></span>
+                            <span class="block text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1.5 flex items-center"><svg class="w-3.5 h-3.5 text-[#0aadc7] mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>前回セッションの全セット記録 <span id="stat-prev-date" class="text-[9px] text-gray-600 ml-1.5 font-mono"></span></span>
                             <div id="stat-prev-sets-box" class="flex flex-wrap gap-1.5 text-xs text-gray-400">なし</div>
                         </div>
                     </div>
@@ -151,12 +151,20 @@
             Object.keys(exerciseMaster).forEach(t=>{e.innerHTML+=`<button onclick="updateCharts('${t}')" id="f-part-${t}" class="px-2.5 py-1 rounded-md text-[10px] font-bold bg-black text-gray-400">${t}</button>`;});
             const n=document.getElementById('period-filters');n.innerHTML='';
             ['ALL','6M','3M','1M'].forEach(t=>{n.innerHTML+=`<button onclick="updatePeriod('${t}')" id="f-per-${t}" class="px-2.5 py-0.5 rounded text-[10px] font-bold ${t==='ALL'?'bg-[#0aadc7] text-black':'bg-black text-gray-400'}">${t==='ALL'?'ALL':t==='6M'?'6ヶ月':t==='3M'?'3ヶ月':'1ヶ月'}</button>`;});
+            selectCategory(currentCategory);
         }
-        function selectCategory(t){currentCategory=t;renderCategorySelector();const e=document.getElementById('log-exercise');e.innerHTML='';exerciseMaster[t].forEach(t=>e.innerHTML+=`<option value="${t}">${t}</option>`);updatePreviousStats();}
-        function renderSetInputs(){const t=document.getElementById('set-inputs-container');t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`;}}
+        function selectCategory(t){
+            currentCategory=t;
+            Object.keys(exerciseMaster).forEach(e=>{
+                const btn=document.getElementById('category-selector-grid')?.children[Object.keys(exerciseMaster).indexOf(e)];
+                if(btn) btn.className=`py-2.5 rounded-xl text-xs font-bold ${e===t?'bg-[#0aadc7] text-black':'bg-gray-900 text-gray-400'}`;
+            });
+            const e=document.getElementById('log-exercise');if(e){e.innerHTML='';exerciseMaster[t].forEach(t=>e.innerHTML+=`<option value="${t}">${t}</option>`);updatePreviousStats();}
+        }
+        function renderSetInputs(){const t=document.getElementById('set-inputs-container');if(!t)return;t.innerHTML='';for(let e=1;e<=currentSetCount;e++){t.innerHTML+=`<div class="grid grid-cols-3 gap-2 items-center bg-black/40 p-2 rounded-xl border border-gray-900"><div class="text-xs font-black text-gray-500 pl-2">SET ${e}</div><input type="number" id="weight-${e}" placeholder="kg" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"><input type="number" id="rep-${e}" placeholder="reps" class="bg-[#121212] border border-gray-800 rounded-lg p-2 text-sm text-center font-mono text-white focus:outline-none"></div>`;}}
         function addNewSetRow(){currentSetCount++;renderSetInputs();}
         function updatePreviousStats(){
-            const exName=document.getElementById('log-exercise').value;
+            const exSelect=document.getElementById('log-exercise');if(!exSelect||!exSelect.value)return;const exName=exSelect.value;
             const history=appData.logs.filter(e=>e.exercise===exName).sort((t,e)=>new Date(e.date)-new Date(t.date));
             const bestRM = appData.personalBests[exName] || 0;
             document.getElementById('stat-max-rm').innerText = bestRM > 0 ? `${bestRM} kg` : 'なし';
@@ -192,7 +200,6 @@
             if(a.length===0)return alert('入力してください');
             
             let db=isDumbbellExercise(t);
-            // 🔥 【バグ修正】1RM(最大RM)の計算は、2倍などの倍率を一切無視して、純粋に入力された片手重量とレップ数だけで算出
             let maxRM=Math.round(Math.max(...a.map(t=>t.w*(1+t.r/40))));
             let pb=appData.personalBests[t]||0,isPR=false;
             if(pb===0||maxRM>pb){isPR=true;appData.personalBests[t]=maxRM;setTimeout(()=>{triggerConfetti();alert(`🎉 自己ベスト更新!! +${pb===0?maxRM:(maxRM-pb)}kg 達成: ${maxRM}kg 🔥`);},300);}
@@ -208,7 +215,7 @@
             document.getElementById('log-memo-input').value='';currentSetCount=5;renderSetInputs();renderCalendar();switchTab('dash');
         }
         function renderLogList(){
-            const t=document.getElementById('log-list-container');t.innerHTML='';
+            const t=document.getElementById('log-list-container');if(!t)return;t.innerHTML='';
             const e=[...appData.logs].sort((t,e)=>new Date(e.date)-new Date(t.date));
             if(e.length===0){t.innerHTML='<p class="text-xs text-gray-600 text-center py-4">履歴なし</p>';return;}
             e.forEach(e=>{
@@ -227,8 +234,9 @@
         function deleteLog(t){if(!confirm('削除？'))return;appData.logs=appData.logs.filter(e=>e.id!==t);localStorage.setItem('trainwise_core_database',JSON.stringify(appData));renderLogList();renderCalendar();updateCharts(currentFilterPart);document.getElementById('selected-day-log-box').classList.add('hidden');}
         let vC,rC;const opt={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#111'},ticks:{color:'#444',font:{size:9}}},x:{grid:{display:false},ticks:{color:'#888',font:{size:10}}}}};
         function initCharts(){
-            vC=new Chart(document.getElementById('volumeChart').getContext('2d'),{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#00ffff',borderRadius:4}]},options:opt});
-            rC=new Chart(document.getElementById('rmChart').getContext('2d'),{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#ff007f',tension:0.2,fill:false}]},options:opt});
+            const vCtx=document.getElementById('volumeChart')?.getContext('2d'),rCtx=document.getElementById('rmChart')?.getContext('2d');
+            if(vCtx) vC=new Chart(vCtx,{type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#00ffff',borderRadius:4}]},options:opt});
+            if(rCtx) rC=new Chart(rCtx,{type:'line',data:{labels:[],datasets:[{data:[],borderColor:'#ff007f',tension:0.2,fill:false}]},options:opt});
             updateCharts('ALL');
         }
         function updatePeriod(t){currentFilterPeriod=t;['ALL','6M','3M','1M'].forEach(e=>{const btn=document.getElementById(`f-per-${e}`);if(btn)btn.className=e===t?"px-2.5 py-0.5 rounded text-[10px] font-bold bg-[#0aadc7] text-black":"px-2.5 py-0.5 rounded text-[10px] font-bold bg-black text-gray-400";});updateCharts(currentFilterPart);}
@@ -238,11 +246,11 @@
             let f=appData.logs.filter(t=>new Date(t.date)>=lim).sort((t,e)=>new Date(t.date)-new Date(e.date));
             if(t!=='ALL')f=f.filter(e=>e.part===t);
             let vm={},lbl=[],val=[];f.forEach(t=>{let m=t.isDumbbell?2:1,v=t.sets.reduce((t,n)=>t+(n.w*n.r*m),0);vm[t.date]=(vm[t.date]||0)+v;
-            // 🔥 【グラフ側バグ修正】グラフの1RMプロット線も、総ボリュームや2倍に左右されない純粋な片手MAX重量に修正
             let mx=Math.max(...t.sets.map(t=>t.w*(1+t.r/40)));lbl.push(t.date.substring(5));val.push(Math.round(mx));});
             if(vC){vC.data.labels=Object.keys(vm).map(t=>t.substring(5));vC.data.datasets[0].data=Object.values(vm);vC.update();}
             if(rC){rC.data.labels=lbl;rC.data.datasets[0].data=val;rC.update();}
-            document.getElementById('vol-graph-title').innerText=`${t} VOLUME (${currentFilterPeriod})`;document.getElementById('rm-graph-title').innerText=`${t} 1RM (${currentFilterPeriod})`;
+            if(document.getElementById('vol-graph-title'))document.getElementById('vol-graph-title').innerText=`${t} VOLUME (${currentFilterPeriod})`;
+            if(document.getElementById('rm-graph-title'))document.getElementById('rm-graph-title').innerText=`${t} 1RM (${currentFilterPeriod})`;
         }
         function saveApiKey(){const t=document.getElementById('gemini-key-input').value.trim();if(!t)return;localStorage.setItem('trainwise_final_key',t);document.getElementById('api-key-panel').innerHTML='<p class="text-emerald-400 font-bold">✓ Gemini AI ON</p>';}
         async function sendMessage(){
@@ -252,7 +260,14 @@
             const id='loading-'+Date.now();e.innerHTML+=`<div id="${id}" class="text-gray-500 italic p-2 animate-pulse">Thinking...</div>`;e.scrollTop=e.scrollHeight;
             try{const c=JSON.stringify(appData.logs),o=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${a}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:`Log: ${c}. Q: ${n}.`}]}]})}),r=await o.json();document.getElementById(id).remove();e.innerHTML+=`<div class="bg-[#0c0f17] border border-gray-900 p-3.5 rounded-2xl text-white"><span class="font-black text-[#0aadc7] block mb-1">AI Coach</span>${r.candidates[0].content.parts[0].text.replace(/\n/g,'<br>')}</div>`;}catch(t){if(document.getElementById(id))document.getElementById(id).remove();e.innerHTML+='<div class="text-red-500 p-2">Error</div>';}e.scrollTop=e.scrollHeight;
         }
-        window.onload=()=>{renderCalendar();switchTab('dash');};
+        // 🔥 【今回のバグ修正】起動時にセレクトボックスと入力枠の初期生成関数を確実に実行するよう追記
+        window.onload=()=>{
+            renderCategorySelector();
+            renderSetInputs();
+            renderCalendar();
+            initCharts();
+            switchTab('dash');
+        };
     </script>
 </body>
 </html>
