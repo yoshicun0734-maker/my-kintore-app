@@ -1,0 +1,23 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TRAINWISE AI / データ書き出し</title>
+<style>body{background:#080b12;color:#eaf8ff;font:16px system-ui,sans-serif;margin:0 auto;max-width:440px;padding:24px 18px}h1{color:#48d7df;font-size:23px}button{background:#0aadc7;border:0;padding:16px;border-radius:12px;font-weight:800;font-size:16px;width:100%;margin-top:16px;min-height:54px}p{line-height:1.7;color:#b7c8d6}#info{padding:14px;background:#172532;border-radius:12px;margin:18px 0;white-space:pre-wrap}small{color:#8faabd}</style></head><body>
+<h1>TRAINWISE AI バックアップ</h1><p>元アプリと<strong>同じURLのドメイン・同じブラウザ</strong>で開いてください。保存済みデータを読み取るだけで、削除・変更はしません。</p>
+<div id="info">確認中…</div>
+<button onclick="exportLegacy()">バックアップJSONを書き出す</button>
+<p><small>記録が0件と出る場合、元アプリと別のブラウザ・ホーム画面アプリで開いている可能性があります。その場合は同梱のindex_with_backup_button.htmlを元アプリのindex.htmlとして同じ公開先に配置し、元アプリ内のボタンから書き出してください。</small></p>
+<script>
+const key='trainwise_core_database';
+function count(){try{let x=JSON.parse(localStorage.getItem(key)||'null');return x&&Array.isArray(x.logs)?x.logs.length:0;}catch(e){return -1;}}
+document.getElementById('info').textContent='このブラウザで見つかった過去記録：'+count()+' 件';
+async function exportLegacy(){
+  const raw=localStorage.getItem(key);if(!raw){alert('このブラウザには記録がありません');return;}
+  let data;try{data=JSON.parse(raw);if(!Array.isArray(data.logs))throw Error('logs形式ではありません');}catch(e){alert('旧記録を読み込めません');return;}
+  if(!data.logs.length){alert('履歴が0件です。元の記録を使っているブラウザで開いてください。');return;}
+  const filename='trainwise_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  const file=new File([raw],filename,{type:'application/json'});
+  if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
+    try{await navigator.share({files:[file],title:'TRAINWISE AI バックアップ'});return;}catch(e){if(e.name==='AbortError')return;}
+  }
+  const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
+}
+</script></body></html>
