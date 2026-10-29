@@ -406,5 +406,61 @@
             switchTab('dash');
         };
     </script>
+    
+<!-- 履歴バックアップ機能 -->
+<button onclick="backupWorkoutData()" style="position:fixed;bottom:110px;right:15px;z-index:1000;background:#0aadc7;color:black;padding:14px;border-radius:12px;font-weight:bold;">
+  ⬇ 履歴バックアップ
+</button>
+
+<script>
+async function backupWorkoutData() {
+  const raw = localStorage.getItem('trainwise_core_database');
+
+  if (!raw) {
+    alert('保存データが見つかりません');
+    return;
+  }
+
+  let data;
+  try {
+    data = JSON.parse(raw);
+    if (!Array.isArray(data.logs)) throw new Error();
+  } catch (e) {
+    alert('データの読み込みに失敗しました');
+    return;
+  }
+
+  if (data.logs.length === 0) {
+    alert('記録が0件です');
+    return;
+  }
+
+  alert(data.logs.length + '件の記録をバックアップします');
+
+  const filename = 'trainwise_backup.json';
+  const file = new File([raw], filename, {
+    type: 'application/json'
+  });
+
+  if (navigator.share && navigator.canShare?.({files:[file]})) {
+    try {
+      await navigator.share({files:[file]});
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+    }
+  }
+
+  const url = URL.createObjectURL(file);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+</script>
+
 </body>
 </html>
